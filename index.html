@@ -1,153 +1,1037 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1769ff">
-<title>Pokémon Lab</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="appLoader" class="app-loader"><div class="pokeball-loader"><i></i></div><strong>Loading Pokémon Lab</strong><span>Preparing the lab…</span></div>
-<div id="toastRoot" class="toast-root" aria-live="polite"></div>
-
-<!-- AUTH -->
-<div id="authView" class="auth-view hidden">
-  <div class="auth-art"><div class="auth-orb"></div><div class="auth-pokeball">◓</div><p>POKÉMON LAB</p><h1>Your personal<br><span>Pokémon research lab.</span></h1><small>Discover · Collect · Compare · Battle</small></div>
-  <div class="auth-card-wrap">
-    <div class="auth-card">
-      <div class="auth-brand"><div class="brand-mark">⚡</div><div><b>POKÉMON LAB</b><small>Trainer access</small></div></div>
-      <div class="auth-tabs"><button class="auth-tab active" data-auth="login">Login</button><button class="auth-tab" data-auth="register">Register</button></div>
-      <form id="loginForm" class="auth-form">
-        <label>Email<input id="loginEmail" type="email" autocomplete="email" required placeholder="trainer@example.com"></label>
-        <label>Password<div class="password-field"><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"><button type="button" data-toggle-password="#loginPassword"><i class="fa-solid fa-eye"></i></button></div></label>
-        <button class="btn primary wide" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login to Lab</button>
-        <p class="auth-note">Demo account: any registered email/password saved on this device.</p>
-      </form>
-      <form id="registerForm" class="auth-form hidden">
-        <label>Trainer name<input id="registerName" required maxlength="24" placeholder="Ash Ketchum"></label>
-        <label>Email<input id="registerEmail" type="email" autocomplete="email" required placeholder="trainer@example.com"></label>
-        <label>Password<div class="password-field"><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters"><button type="button" data-toggle-password="#registerPassword"><i class="fa-solid fa-eye"></i></button></div></label>
-        <button class="btn primary wide" type="submit"><i class="fa-solid fa-user-plus"></i> Create Trainer</button>
-      </form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1769ff" />
+    <title>Pokémon Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="appLoader" class="app-loader">
+      <div class="pokeball-loader"><i></i></div>
+      <strong>Loading Pokémon Lab</strong><span>Preparing the lab…</span>
     </div>
-  </div>
-</div>
+    <div id="toastRoot" class="toast-root" aria-live="polite"></div>
 
-<div id="appShell" class="app-shell hidden">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand"><div class="brand-mark">⚡</div><div class="brand-copy"><strong>POKÉMON LAB</strong><small>Research & Collection</small></div><button class="sidebar-close" id="sidebarClose" aria-label="Close navigation"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="sidebar-scroll">
-      <nav class="side-nav" aria-label="Primary navigation">
-        <button class="nav-link active" data-page="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
-        <div class="nav-group open">
-          <button class="nav-group-toggle"><span><i class="fa-solid fa-book-open"></i> Pokédex</span><i class="fa-solid fa-chevron-down"></i></button>
-          <div class="nav-sub"><button class="nav-link" data-page="pokedex"><i class="fa-solid fa-magnifying-glass"></i><span>Search Pokémon</span></button><button class="nav-link" data-page="type"><i class="fa-solid fa-layer-group"></i><span>Search by Type</span></button><button class="nav-link" data-page="advanced"><i class="fa-solid fa-sliders"></i><span>Advanced Search</span></button><button class="nav-link" data-page="info"><i class="fa-solid fa-dna"></i><span>Info / Evolution</span></button><button class="nav-link" data-page="regions"><i class="fa-solid fa-earth-americas"></i><span>Regions</span></button></div>
+    <!-- AUTH -->
+    <div id="authView" class="auth-view hidden">
+      <div class="auth-art">
+        <div class="auth-orb"></div>
+        <div class="auth-pokeball">◓</div>
+        <p>POKÉMON <span>LAB</span></p>
+        <h1>Your personal<br /><span>Pokémon research lab.</span></h1>
+        <small>Discover · Collect · Compare · Battle</small>
+      </div>
+      <div class="auth-card-wrap">
+        <div class="auth-card">
+          <div class="auth-brand">
+            <div class="pokeball-logo"><span></span></div>
+            <div><b>POKÉMON <span class="yellow">LAB</span></b><small>Trainer access</small></div>
+          </div>
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-auth="login">Login</button
+            ><button class="auth-tab" data-auth="register">Register</button>
+          </div>
+          <form id="loginForm" class="auth-form">
+            <label
+              >Email<input
+                id="loginEmail"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="trainer@example.com"
+            /></label>
+            <label
+              >Password
+              <div class="password-field">
+                <input
+                  id="loginPassword"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  placeholder="••••••••"
+                /><button type="button" data-toggle-password="#loginPassword">
+                  <i class="fa-solid fa-eye"></i>
+                </button></div
+            ></label>
+            <button class="btn primary wide" type="submit">
+              <i class="fa-solid fa-right-to-bracket"></i> Login to Lab
+            </button>
+            <p class="auth-note">
+              Demo account: any registered email/password saved on this device.
+            </p>
+          </form>
+          <form id="registerForm" class="auth-form hidden">
+            <label
+              >Trainer name<input
+                id="registerName"
+                required
+                maxlength="24"
+                placeholder="Ash Ketchum"
+            /></label>
+            <label
+              >Email<input
+                id="registerEmail"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="trainer@example.com"
+            /></label>
+            <label
+              >Password
+              <div class="password-field">
+                <input
+                  id="registerPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                  placeholder="At least 6 characters"
+                /><button
+                  type="button"
+                  data-toggle-password="#registerPassword"
+                >
+                  <i class="fa-solid fa-eye"></i>
+                </button></div
+            ></label>
+            <button class="btn primary wide" type="submit">
+              <i class="fa-solid fa-user-plus"></i> Create Trainer
+            </button>
+          </form>
         </div>
-        <div class="nav-group">
-          <button class="nav-group-toggle"><span><i class="fa-solid fa-box-open"></i> Collection</span><i class="fa-solid fa-chevron-down"></i></button>
-          <div class="nav-sub"><button class="nav-link" data-page="collection"><i class="fa-solid fa-folder"></i><span>My Collection</span></button><button class="nav-link" data-page="favorites"><i class="fa-solid fa-heart"></i><span>Favorites</span></button><button class="nav-link" data-page="shiny"><i class="fa-solid fa-star"></i><span>Shiny Collection</span></button></div>
-        </div>
-        <div class="nav-group">
-          <button class="nav-group-toggle"><span><i class="fa-solid fa-flask"></i> Lab</span><i class="fa-solid fa-chevron-down"></i></button>
-          <div class="nav-sub"><button class="nav-link" data-page="team"><i class="fa-solid fa-users"></i><span>Team Builder</span></button><button class="nav-link" data-page="compare"><i class="fa-solid fa-code-compare"></i><span>Compare</span></button><button class="nav-link" data-page="typeLab"><i class="fa-solid fa-flask"></i><span>Type Calculator</span></button><button class="nav-link" data-page="damage"><i class="fa-solid fa-bolt"></i><span>Damage Calculator</span></button><button class="nav-link" data-page="statsCalc"><i class="fa-solid fa-chart-simple"></i><span>Stat Calculator</span></button></div>
-        </div>
-        <div class="nav-group">
-          <button class="nav-group-toggle"><span><i class="fa-solid fa-shield-halved"></i> Battle</span><i class="fa-solid fa-chevron-down"></i></button>
-          <div class="nav-sub"><button class="nav-link" data-page="battle"><i class="fa-solid fa-crosshairs"></i><span>Quick Battle</span></button><button class="nav-link" data-page="battleHistory"><i class="fa-solid fa-clock-rotate-left"></i><span>Battle History</span></button></div>
-        </div>
-        <div class="nav-group">
-          <button class="nav-group-toggle"><span><i class="fa-solid fa-gamepad"></i> Games</span><i class="fa-solid fa-chevron-down"></i></button>
-          <div class="nav-sub"><button class="nav-link" data-page="mystery"><i class="fa-solid fa-gift"></i><span>Mystery Card</span></button><button class="nav-link" data-page="quiz"><i class="fa-solid fa-circle-question"></i><span>Who's That Pokémon?</span></button><button class="nav-link" data-page="cryQuiz"><i class="fa-solid fa-volume-high"></i><span>Cry Quiz</span></button><button class="nav-link" data-page="daily"><i class="fa-solid fa-calendar-check"></i><span>Daily Challenge</span></button></div>
-        </div>
-        <div class="nav-group">
-          <button class="nav-group-toggle"><span><i class="fa-solid fa-user-astronaut"></i> Trainer</span><i class="fa-solid fa-chevron-down"></i></button>
-          <div class="nav-sub"><button class="nav-link" data-page="trainer"><i class="fa-solid fa-id-card"></i><span>Trainer Profile</span></button><button class="nav-link" data-page="achievements"><i class="fa-solid fa-trophy"></i><span>Achievements</span></button><button class="nav-link" data-page="analytics"><i class="fa-solid fa-chart-pie"></i><span>Analytics</span></button></div>
-        </div>
-      </nav>
+      </div>
     </div>
-    <div class="sidebar-footer"><div class="mini-progress"><span id="sideProgressText">0 / 151</span><div><i id="sideProgressBar"></i></div></div><button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button></div>
-  </aside>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <main class="main-content">
-    <header class="top-header">
-      <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation"><i class="fa-solid fa-bars"></i></button>
-      <div class="global-search"><i class="fa-solid fa-magnifying-glass"></i><input id="globalSearch" placeholder="Search Pokémon, type, ability, move…" autocomplete="off"><kbd>Enter</kbd></div>
-      <div class="header-actions"><button class="icon-btn" id="themeBtn" title="Theme: System"><i class="fa-solid fa-circle-half-stroke"></i></button><button class="icon-btn" id="quickProfile" title="Open trainer profile"><i class="fa-solid fa-user"></i></button><button class="trainer-chip" id="trainerChip"><span id="trainerAvatar">⚡</span><b id="trainerName">Trainer</b><i class="fa-solid fa-chevron-down"></i></button></div>
-    </header>
-
-    <div id="pageRoot">
-      <!-- HOME -->
-      <section class="page active" id="page-home"><div class="page-head"><div><span class="eyebrow">POKÉMON LAB / HOME</span><h1>Welcome to the Lab, <span id="homeTrainerName">Trainer</span>.</h1><p>Discover, collect, compare and battle across your own Pokémon research station.</p></div><div class="page-head-actions"><button class="btn primary" data-page="pokedex"><i class="fa-solid fa-compass"></i> Explore Pokédex</button><button class="btn ghost" data-page="battle"><i class="fa-solid fa-bolt"></i> Battle</button></div></div>
-        <div class="home-grid"><section class="hero-card"><div><span class="hero-badge"><i class="fa-solid fa-flask"></i> DAILY RESEARCH</span><h2>Every discovery<br>starts with curiosity.</h2><p>Search a Pokémon, add it to your collection, then explore its evolution, stats and battle data.</p><div class="hero-actions"><button class="btn white" data-page="pokedex">Explore Pokémon</button><button class="btn glass" data-page="collection">My Collection <i class="fa-solid fa-arrow-right"></i></button></div></div><div class="hero-pokeball">◓</div></section>
-          <section class="progress-card"><div class="section-head"><div><span class="eyebrow">COLLECTION</span><h3>Collection Progress</h3></div><button class="text-btn" data-page="collection">View collection <i class="fa-solid fa-arrow-right"></i></button></div><div class="progress-main"><div class="progress-ring" id="homeProgressRing"><span id="homeProgressPct">0%</span></div><div><strong id="homeProgressCount">0 / 151</strong><p>Base Kanto Pokédex tracked</p><div class="progress-bar"><i id="homeProgressBar"></i></div></div></div><div class="type-mini" id="homeTypeProgress"></div></section>
-          <section class="quick-section full"><div class="section-head"><div><span class="eyebrow">LAB SHORTCUTS</span><h3>Choose your next experiment</h3></div></div><div class="shortcut-grid"><button class="shortcut" data-page="pokedex"><span class="shortcut-icon blue"><i class="fa-solid fa-magnifying-glass"></i></span><b>Search Pokémon</b><small>Explore detailed Pokédex records</small><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button class="shortcut" data-page="mystery"><span class="shortcut-icon pink"><i class="fa-solid fa-gift"></i></span><b>Mystery Card</b><small>Reveal a random discovery</small><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button class="shortcut" data-page="team"><span class="shortcut-icon green"><i class="fa-solid fa-users"></i></span><b>Team Builder</b><small>Build and analyse your squad</small><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button class="shortcut" data-page="compare"><span class="shortcut-icon orange"><i class="fa-solid fa-code-compare"></i></span><b>Compare</b><small>Study up to four Pokémon</small><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button class="shortcut" data-page="quiz"><span class="shortcut-icon purple"><i class="fa-solid fa-gamepad"></i></span><b>Quiz Lab</b><small>Test your Pokémon knowledge</small><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button class="shortcut" data-page="typeLab"><span class="shortcut-icon cyan"><i class="fa-solid fa-flask"></i></span><b>Type Lab</b><small>Investigate type matchups</small><i class="fa-solid fa-arrow-up-right-from-square"></i></button></div></section>
-          <section class="panel full"><div class="section-head"><div><span class="eyebrow">FEATURED</span><h3>Pokémon of the Day</h3></div><button class="text-btn" id="dailyPokemonRefresh"><i class="fa-solid fa-shuffle"></i> Another</button></div><div id="pokemonOfDay" class="feature-pokemon"></div></section>
-          <section class="panel"><div class="section-head"><div><span class="eyebrow">HISTORY</span><h3>Recently Viewed</h3></div><button class="text-btn" id="clearRecent">Clear</button></div><div id="recentHome" class="recent-list"></div></section>
-          <section class="panel"><div class="section-head"><div><span class="eyebrow">CHALLENGE</span><h3>Today's Mission</h3></div></div><div id="homeDaily" class="daily-mini"></div></section>
+    <div id="appShell" class="app-shell hidden">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <div class="auth-brand">
+            <div class="pokeball-logo"><span></span></div>
+            <div><b>POKÉMON <span class="yellow">LAB</span></b><small>Trainer access</small></div>
+          </div>
+          <button
+            class="sidebar-close"
+            id="sidebarClose"
+            aria-label="Close navigation"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
-      </section>
+        <div class="sidebar-scroll">
+          <nav class="side-nav" aria-label="Primary navigation">
+            <button class="nav-link active" data-page="home">
+              <i class="fa-solid fa-house"></i><span>Home</span>
+            </button>
+            <div class="nav-group open">
+              <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-book-open"></i> Pokédex</span
+                ><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="pokedex">
+                  <i class="fa-solid fa-magnifying-glass"></i
+                  ><span>Search Pokémon</span></button
+                ><button class="nav-link" data-page="type">
+                  <i class="fa-solid fa-layer-group"></i
+                  ><span>Search by Type</span></button
+                ><button class="nav-link" data-page="advanced">
+                  <i class="fa-solid fa-sliders"></i
+                  ><span>Advanced Search</span></button
+                ><button class="nav-link" data-page="info">
+                  <i class="fa-solid fa-dna"></i
+                  ><span>Info / Evolution</span></button
+                ><button class="nav-link" data-page="regions">
+                  <i class="fa-solid fa-earth-americas"></i><span>Regions</span>
+                </button>
+              </div>
+            </div>
+            <div class="nav-group">
+              <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-box-open"></i> Collection</span
+                ><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="collection">
+                  <i class="fa-solid fa-folder"></i
+                  ><span>My Collection</span></button
+                ><button class="nav-link" data-page="favorites">
+                  <i class="fa-solid fa-heart"></i
+                  ><span>Favorites</span></button
+                ><button class="nav-link" data-page="shiny">
+                  <i class="fa-solid fa-star"></i><span>Shiny Collection</span>
+                </button>
+              </div>
+            </div>
+            <div class="nav-group">
+              <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-flask"></i> Lab</span
+                ><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="team">
+                  <i class="fa-solid fa-users"></i
+                  ><span>Team Builder</span></button
+                ><button class="nav-link" data-page="compare">
+                  <i class="fa-solid fa-code-compare"></i
+                  ><span>Compare</span></button
+                ><button class="nav-link" data-page="typeLab">
+                  <i class="fa-solid fa-flask"></i
+                  ><span>Type Calculator</span></button
+                ><button class="nav-link" data-page="damage">
+                  <i class="fa-solid fa-bolt"></i
+                  ><span>Damage Calculator</span></button
+                ><button class="nav-link" data-page="statsCalc">
+                  <i class="fa-solid fa-chart-simple"></i
+                  ><span>Stat Calculator</span>
+                </button>
+              </div>
+            </div>
+            <div class="nav-group">
+              <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-shield-halved"></i> Battle</span
+                ><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="battle">
+                  <i class="fa-solid fa-crosshairs"></i
+                  ><span>Quick Battle</span></button
+                ><button class="nav-link" data-page="battleHistory">
+                  <i class="fa-solid fa-clock-rotate-left"></i
+                  ><span>Battle History</span>
+                </button>
+              </div>
+            </div>
+            <div class="nav-group">
+              <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-gamepad"></i> Games</span
+                ><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="mystery">
+                  <i class="fa-solid fa-gift"></i
+                  ><span>Mystery Card</span></button
+                ><button class="nav-link" data-page="quiz">
+                  <i class="fa-solid fa-circle-question"></i
+                  ><span>Who's That Pokémon?</span></button
+                ><button class="nav-link" data-page="cryQuiz">
+                  <i class="fa-solid fa-volume-high"></i
+                  ><span>Cry Quiz</span></button
+                ><button class="nav-link" data-page="daily">
+                  <i class="fa-solid fa-calendar-check"></i
+                  ><span>Daily Challenge</span>
+                </button>
+              </div>
+            </div>
+            <div class="nav-group">
+              <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-user-astronaut"></i> Trainer</span
+                ><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="trainer">
+                  <i class="fa-solid fa-id-card"></i
+                  ><span>Trainer Profile</span></button
+                ><button class="nav-link" data-page="achievements">
+                  <i class="fa-solid fa-trophy"></i
+                  ><span>Achievements</span></button
+                ><button class="nav-link" data-page="analytics">
+                  <i class="fa-solid fa-chart-pie"></i><span>Analytics</span>
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+        <div class="sidebar-footer">
+          <div class="mini-progress">
+            <span id="sideProgressText">0 / 151</span>
+            <div><i id="sideProgressBar"></i></div>
+          </div>
+          <button class="logout-btn" id="logoutBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
+          </button>
+        </div>
+      </aside>
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-      <!-- POKEDEX -->
-      <section class="page" id="page-pokedex"><div class="page-head"><div><span class="eyebrow">POKÉDEX / SEARCH</span><h1>Search Pokémon</h1><p>Search by name or Pokédex number and inspect a full research record.</p></div></div><div class="search-panel"><div class="search-box large"><i class="fa-solid fa-magnifying-glass"></i><input id="pokemonSearch" placeholder="Try Pikachu, Charizard or 25…"><button class="btn primary" id="pokemonSearchBtn">Search</button></div><div class="suggestions"><span>Quick search:</span><button data-search="pikachu">Pikachu</button><button data-search="charizard">Charizard</button><button data-search="eevee">Eevee</button><button data-search="25">#25</button></div></div><div id="pokedexResult" class="result-area"><div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i><h3>Search the Pokédex</h3><p>Your Pokémon research result will appear here.</p></div></div></section>
+      <main class="main-content">
+        <header class="top-header">
+          <button
+            class="mobile-menu"
+            id="mobileMenu"
+            aria-label="Open navigation"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="global-search">
+            <i class="fa-solid fa-magnifying-glass"></i
+            ><input
+              id="globalSearch"
+              placeholder="Search Pokémon, type, ability, move…"
+              autocomplete="off"
+            /><kbd>Enter</kbd>
+          </div>
+          <div class="header-actions">
+            <button class="icon-btn" id="themeBtn" title="Theme: System">
+              <i class="fa-solid fa-circle-half-stroke"></i></button
+            ><button
+              class="icon-btn"
+              id="quickProfile"
+              title="Open trainer profile"
+            >
+              <i class="fa-solid fa-user"></i></button
+            ><button class="trainer-chip" id="trainerChip">
+              <span id="trainerAvatar">⚡</span><b id="trainerName">Trainer</b
+              ><i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </div>
+        </header>
 
-      <!-- TYPE -->
-      <section class="page" id="page-type"><div class="page-head"><div><span class="eyebrow">POKÉDEX / TYPES</span><h1>Search by Type</h1><p>Explore every Pokémon returned by a type, not just the first five.</p></div></div><div id="typeButtons" class="type-filter-grid"></div><div class="selected-banner" id="selectedType">Choose a type to load its complete list.</div><div id="typeResult" class="pokemon-grid"></div></section>
+        <div id="pageRoot">
+          <!-- HOME -->
+          <section class="page active" id="page-home">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">POKÉMON LAB / HOME</span>
+                <h1>
+                  Welcome to the Lab, <span id="homeTrainerName">Trainer</span>.
+                </h1>
+                <p>
+                  Discover, collect, compare and battle across your own Pokémon
+                  research station.
+                </p>
+              </div>
+              <div class="page-head-actions">
+                <button class="btn primary" data-page="pokedex">
+                  <i class="fa-solid fa-compass"></i> Explore Pokédex</button
+                ><button class="btn ghost" data-page="battle">
+                  <i class="fa-solid fa-bolt"></i> Battle
+                </button>
+              </div>
+            </div>
+            <div class="home-grid">
+              <section class="hero-card">
+                <div>
+                  <span class="hero-badge"
+                    ><i class="fa-solid fa-flask"></i> DAILY RESEARCH</span
+                  >
+                  <h2>Every discovery<br />starts with curiosity.</h2>
+                  <p>
+                    Search a Pokémon, add it to your collection, then explore
+                    its evolution, stats and battle data.
+                  </p>
+                  <div class="hero-actions">
+                    <button class="btn white" data-page="pokedex">
+                      Explore Pokémon</button
+                    ><button class="btn glass" data-page="collection">
+                      My Collection <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="hero-pokeball">◓</div>
+              </section>
+              <section class="progress-card">
+                <div class="section-head">
+                  <div>
+                    <span class="eyebrow">COLLECTION</span>
+                    <h3>Collection Progress</h3>
+                  </div>
+                  <button class="text-btn" data-page="collection">
+                    View collection <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+                <div class="progress-main">
+                  <div class="progress-ring" id="homeProgressRing">
+                    <span id="homeProgressPct">0%</span>
+                  </div>
+                  <div>
+                    <strong id="homeProgressCount">0 / 151</strong>
+                    <p>Base Kanto Pokédex tracked</p>
+                    <div class="progress-bar"><i id="homeProgressBar"></i></div>
+                  </div>
+                </div>
+                <div class="type-mini" id="homeTypeProgress"></div>
+              </section>
+              <section class="quick-section full">
+                <div class="section-head">
+                  <div>
+                    <span class="eyebrow">LAB SHORTCUTS</span>
+                    <h3>Choose your next experiment</h3>
+                  </div>
+                </div>
+                <div class="shortcut-grid">
+                  <button class="shortcut" data-page="pokedex">
+                    <span class="shortcut-icon blue"
+                      ><i class="fa-solid fa-magnifying-glass"></i></span
+                    ><b>Search Pokémon</b
+                    ><small>Explore detailed Pokédex records</small
+                    ><i
+                      class="fa-solid fa-arrow-up-right-from-square"
+                    ></i></button
+                  ><button class="shortcut" data-page="mystery">
+                    <span class="shortcut-icon pink"
+                      ><i class="fa-solid fa-gift"></i></span
+                    ><b>Mystery Card</b><small>Reveal a random discovery</small
+                    ><i
+                      class="fa-solid fa-arrow-up-right-from-square"
+                    ></i></button
+                  ><button class="shortcut" data-page="team">
+                    <span class="shortcut-icon green"
+                      ><i class="fa-solid fa-users"></i></span
+                    ><b>Team Builder</b
+                    ><small>Build and analyse your squad</small
+                    ><i
+                      class="fa-solid fa-arrow-up-right-from-square"
+                    ></i></button
+                  ><button class="shortcut" data-page="compare">
+                    <span class="shortcut-icon orange"
+                      ><i class="fa-solid fa-code-compare"></i></span
+                    ><b>Compare</b><small>Study up to four Pokémon</small
+                    ><i
+                      class="fa-solid fa-arrow-up-right-from-square"
+                    ></i></button
+                  ><button class="shortcut" data-page="quiz">
+                    <span class="shortcut-icon purple"
+                      ><i class="fa-solid fa-gamepad"></i></span
+                    ><b>Quiz Lab</b><small>Test your Pokémon knowledge</small
+                    ><i
+                      class="fa-solid fa-arrow-up-right-from-square"
+                    ></i></button
+                  ><button class="shortcut" data-page="typeLab">
+                    <span class="shortcut-icon cyan"
+                      ><i class="fa-solid fa-flask"></i></span
+                    ><b>Type Lab</b><small>Investigate type matchups</small
+                    ><i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </button>
+                </div>
+              </section>
+              <section class="panel ">
+                <div class="section-head">
+                  <div>
+                    <span class="eyebrow">FEATURED</span>
+                    <h3>Pokémon of the Day</h3>
+                  </div>
+                  <button class="text-btn" id="dailyPokemonRefresh">
+                    <i class="fa-solid fa-shuffle"></i> Another
+                  </button>
+                </div>
+                <div id="pokemonOfDay" class="feature-pokemon"></div>
+              </section>
+              
+              <section class="panel">
+                <div class="section-head">
+                  <div>
+                    <span class="eyebrow">CHALLENGE</span>
+                    <h3>Today's Mission</h3>
+                  </div>
+                </div>
+                <div id="homeDaily" class="daily-mini"></div>
+              </section>
+              <section class="panel full">
+                <div class="section-head">
+                  <div>
+                    <span class="eyebrow">HISTORY</span>
+                    <h3>Recently Viewed</h3>
+                  </div>
+                  <button class="text-btn" id="clearRecent">Clear</button>
+                </div>
+                <div id="recentHome" class="recent-list"></div>
+              </section>
+            </div>
+          </section>
 
-      <!-- ADVANCED -->
-      <section class="page" id="page-advanced"><div class="page-head"><div><span class="eyebrow">POKÉDEX / ADVANCED</span><h1>Advanced Search</h1><p>Combine generation, type and stat filters without downloading the full Pokédex.</p></div></div><div class="filter-panel"><div class="field"><label>Generation</label><select id="advGen"><option value="">All generations</option><option value="1">Gen 1 · Kanto</option><option value="2">Gen 2 · Johto</option><option value="3">Gen 3 · Hoenn</option><option value="4">Gen 4 · Sinnoh</option><option value="5">Gen 5 · Unova</option><option value="6">Gen 6 · Kalos</option><option value="7">Gen 7 · Alola</option><option value="8">Gen 8 · Galar</option><option value="9">Gen 9 · Paldea</option></select></div><div class="field"><label>Type</label><select id="advType"><option value="">All types</option></select></div><div class="field"><label>Min Speed</label><input id="advSpeed" type="number" min="0" placeholder="e.g. 100"></div><div class="field"><label>Min Attack</label><input id="advAttack" type="number" min="0" placeholder="e.g. 100"></div><div class="field"><label>Category</label><select id="advCategory"><option value="">All</option><option value="legendary">Legendary</option><option value="mythical">Mythical</option><option value="starter">Starter</option></select></div><button class="btn primary" id="advancedSearchBtn"><i class="fa-solid fa-filter"></i> Apply Filters</button></div><div id="advancedResult" class="pokemon-grid"></div></section>
+          <!-- POKEDEX -->
+          <section class="page" id="page-pokedex">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">POKÉDEX / SEARCH</span>
+                <h1>Search Pokémon</h1>
+                <p>
+                  Search by name or Pokédex number and inspect a full research
+                  record.
+                </p>
+              </div>
+            </div>
+            <div class="search-panel">
+              <div class="search-box large">
+                <i class="fa-solid fa-magnifying-glass"></i
+                ><input
+                  id="pokemonSearch"
+                  placeholder="Try Pikachu, Charizard or 25…"
+                /><button class="btn primary" id="pokemonSearchBtn">
+                  Search
+                </button>
+              </div>
+              <div class="suggestions">
+                <span>Quick search:</span
+                ><button data-search="pikachu">Pikachu</button
+                ><button data-search="charizard">Charizard</button
+                ><button data-search="eevee">Eevee</button
+                ><button data-search="25">#25</button>
+              </div>
+            </div>
+            <div id="pokedexResult" class="result-area">
+              <div class="empty-state">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <h3>Search the Pokédex</h3>
+                <p>Your Pokémon research result will appear here.</p>
+              </div>
+            </div>
+          </section>
 
-      <!-- COLLECTION -->
-      <section class="page" id="page-collection"><div class="page-head"><div><span class="eyebrow">COLLECTION</span><h1>My Collection</h1><p>Build your personal Pokédex. Your progress is stored on this device.</p></div><div class="page-head-actions"><button class="btn ghost" id="collectionClear"><i class="fa-solid fa-trash"></i> Clear</button></div></div><div class="collection-stats" id="collectionStats"></div><div class="collection-toolbar"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="collectionSearch" placeholder="Search your collection…"></div><select id="collectionFilter"><option value="all">All collected</option><option value="favorite">Favorites</option><option value="shiny">Shiny</option><option value="legendary">Legendary</option></select><select id="collectionSort"><option value="id">Pokédex order</option><option value="name">Name</option><option value="recent">Recently added</option></select><button class="icon-btn" id="collectionView" title="Toggle list view"><i class="fa-solid fa-list"></i></button></div><div id="collectionGrid" class="pokemon-grid"></div></section>
+          <!-- TYPE -->
+          <section class="page" id="page-type">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">POKÉDEX / TYPES</span>
+                <h1>Search by Type</h1>
+                <p>
+                  Explore every Pokémon returned by a type, not just the first
+                  five.
+                </p>
+              </div>
+            </div>
+            <div id="typeButtons" class="type-filter-grid"></div>
+            <div class="selected-banner" id="selectedType">
+              Choose a type to load its complete list.
+            </div>
+            <div id="typeResult" class="pokemon-grid"></div>
+          </section>
 
-      <section class="page" id="page-favorites"><div class="page-head"><div><span class="eyebrow">COLLECTION / FAVORITES</span><h1>Favorites</h1><p>Pokémon you want close at hand.</p></div></div><div id="favoriteGrid" class="pokemon-grid"></div></section>
-      <section class="page" id="page-shiny"><div class="page-head"><div><span class="eyebrow">COLLECTION / SHINY</span><h1>Shiny Collection</h1><p>Track your shiny discoveries separately from normal collection progress.</p></div></div><div id="shinyStats" class="collection-stats"></div><div id="shinyGrid" class="pokemon-grid"></div></section>
+          <!-- ADVANCED -->
+          <section class="page" id="page-advanced">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">POKÉDEX / ADVANCED</span>
+                <h1>Advanced Search</h1>
+                <p>
+                  Combine generation, type and stat filters without downloading
+                  the full Pokédex.
+                </p>
+              </div>
+            </div>
+            <div class="filter-panel">
+              <div class="field">
+                <label>Generation</label
+                ><select id="advGen">
+                  <option value="">All generations</option>
+                  <option value="1">Gen 1 · Kanto</option>
+                  <option value="2">Gen 2 · Johto</option>
+                  <option value="3">Gen 3 · Hoenn</option>
+                  <option value="4">Gen 4 · Sinnoh</option>
+                  <option value="5">Gen 5 · Unova</option>
+                  <option value="6">Gen 6 · Kalos</option>
+                  <option value="7">Gen 7 · Alola</option>
+                  <option value="8">Gen 8 · Galar</option>
+                  <option value="9">Gen 9 · Paldea</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Type</label
+                ><select id="advType">
+                  <option value="">All types</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Min Speed</label
+                ><input
+                  id="advSpeed"
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 100"
+                />
+              </div>
+              <div class="field">
+                <label>Min Attack</label
+                ><input
+                  id="advAttack"
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 100"
+                />
+              </div>
+              <div class="field">
+                <label>Category</label
+                ><select id="advCategory">
+                  <option value="">All</option>
+                  <option value="legendary">Legendary</option>
+                  <option value="mythical">Mythical</option>
+                  <option value="starter">Starter</option>
+                </select>
+              </div>
+              <button class="btn primary" id="advancedSearchBtn">
+                <i class="fa-solid fa-filter"></i> Apply Filters
+              </button>
+            </div>
+            <div id="advancedResult" class="pokemon-grid"></div>
+          </section>
 
-      <!-- INFO -->
-      <section class="page" id="page-info"><div class="page-head"><div><span class="eyebrow">POKÉDEX / INFO</span><h1>Pokémon Info</h1><p>Evolution, stats, abilities, moves and research details.</p></div></div><div class="search-panel"><div class="search-box large"><i class="fa-solid fa-dna"></i><input id="infoSearch" placeholder="Search a Pokémon to see its evolution family…"><button class="btn primary" id="infoSearchBtn">Research</button></div></div><div id="infoResult"></div></section>
+          <!-- COLLECTION -->
+          <section class="page" id="page-collection">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">COLLECTION</span>
+                <h1>My Collection</h1>
+                <p>
+                  Build your personal Pokédex. Your progress is stored on this
+                  device.
+                </p>
+              </div>
+              <div class="page-head-actions">
+                <button class="btn ghost" id="collectionClear">
+                  <i class="fa-solid fa-trash"></i> Clear
+                </button>
+              </div>
+            </div>
+            <div class="collection-stats" id="collectionStats"></div>
+            <div class="collection-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i
+                ><input
+                  id="collectionSearch"
+                  placeholder="Search your collection…"
+                />
+              </div>
+              <select id="collectionFilter">
+                <option value="all">All collected</option>
+                <option value="favorite">Favorites</option>
+                <option value="shiny">Shiny</option>
+                <option value="legendary">Legendary</option></select
+              ><select id="collectionSort">
+                <option value="id">Pokédex order</option>
+                <option value="name">Name</option>
+                <option value="recent">Recently added</option></select
+              ><button
+                class="icon-btn"
+                id="collectionView"
+                title="Toggle list view"
+              >
+                <i class="fa-solid fa-list"></i>
+              </button>
+            </div>
+            <div id="collectionGrid" class="pokemon-grid"></div>
+          </section>
 
-      <!-- TEAM -->
-      <section class="page" id="page-team"><div class="page-head"><div><span class="eyebrow">LAB / TEAM BUILDER</span><h1>Team Lab</h1><p>Build a six-Pokémon squad and inspect its defensive profile.</p></div><button class="btn primary" id="saveTeam"><i class="fa-solid fa-floppy-disk"></i> Save Team</button></div><div class="team-layout"><div><div class="team-name-row"><input id="teamName" value="My Team" maxlength="24"><button class="btn ghost" id="clearTeam"><i class="fa-solid fa-rotate-left"></i> Clear</button></div><div id="teamSlots" class="team-slots"></div><div class="search-box"><i class="fa-solid fa-plus"></i><input id="teamSearch" placeholder="Search Pokémon to add…"><button class="btn primary" id="teamAddBtn">Add</button></div><div id="teamSuggestions" class="suggestion-row"></div></div><aside id="teamAnalysis" class="panel sticky-panel"></aside></div><div class="panel saved-teams"><div class="section-head"><h3>Saved Teams</h3></div><div id="savedTeams"></div></div></section>
+          <section class="page" id="page-favorites">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">COLLECTION / FAVORITES</span>
+                <h1>Favorites</h1>
+                <p>Pokémon you want close at hand.</p>
+              </div>
+            </div>
+            <div id="favoriteGrid" class="pokemon-grid"></div>
+          </section>
+          <section class="page" id="page-shiny">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">COLLECTION / SHINY</span>
+                <h1>Shiny Collection</h1>
+                <p>
+                  Track your shiny discoveries separately from normal collection
+                  progress.
+                </p>
+              </div>
+            </div>
+            <div id="shinyStats" class="collection-stats"></div>
+            <div id="shinyGrid" class="pokemon-grid"></div>
+          </section>
 
-      <!-- COMPARE -->
-      <section class="page" id="page-compare"><div class="page-head"><div><span class="eyebrow">LAB / COMPARISON</span><h1>Compare Pokémon</h1><p>Add two to four Pokémon and compare their raw data without an overall winner score.</p></div></div><div class="search-box large"><i class="fa-solid fa-plus"></i><input id="compareSearch" placeholder="Add Pikachu, Charizard…"><button class="btn primary" id="compareAddBtn">Add</button></div><div id="compareSuggestions" class="suggestion-row"></div><div id="compareResult" class="compare-table-wrap"></div></section>
+          <!-- INFO -->
+          <section class="page" id="page-info">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">POKÉDEX / INFO</span>
+                <h1>Pokémon Info</h1>
+                <p>Evolution, stats, abilities, moves and research details.</p>
+              </div>
+            </div>
+            <div class="search-panel">
+              <div class="search-box large">
+                <i class="fa-solid fa-dna"></i
+                ><input
+                  id="infoSearch"
+                  placeholder="Search a Pokémon to see its evolution family…"
+                /><button class="btn primary" id="infoSearchBtn">
+                  Research
+                </button>
+              </div>
+            </div>
+            <div id="infoResult"></div>
+          </section>
 
-      <!-- TYPE LAB -->
-      <section class="page" id="page-typeLab"><div class="page-head"><div><span class="eyebrow">LAB / TYPE EFFECTIVENESS</span><h1>Type Lab</h1><p>Investigate how attacking and defending types interact.</p></div></div><div class="type-lab-controls"><div class="field"><label>Attacking type</label><select id="attackType"></select></div><div class="field"><label>Defending type 1</label><select id="defType1"></select></div><div class="field"><label>Defending type 2 <small>(optional)</small></label><select id="defType2"><option value="">None</option></select></div></div><div id="typeLabResult" class="effect-result"></div><div class="panel matrix-panel"><div class="section-head"><h3>Type Matrix</h3><span>×2 super effective · ×0.5 resisted · ×0 immune</span></div><div id="typeMatrix" class="type-matrix"></div></div></section>
+          <!-- TEAM -->
+          <section class="page" id="page-team">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">LAB / TEAM BUILDER</span>
+                <h1>Team Lab</h1>
+                <p>
+                  Build a six-Pokémon squad and inspect its defensive profile.
+                </p>
+              </div>
+              <button class="btn primary" id="saveTeam">
+                <i class="fa-solid fa-floppy-disk"></i> Save Team
+              </button>
+            </div>
+            <div class="team-layout">
+              <div>
+                <div class="team-name-row">
+                  <input id="teamName" value="My Team" maxlength="24" /><button
+                    class="btn ghost"
+                    id="clearTeam"
+                  >
+                    <i class="fa-solid fa-rotate-left"></i> Clear
+                  </button>
+                </div>
+                <div id="teamSlots" class="team-slots"></div>
+                <div class="search-box">
+                  <i class="fa-solid fa-plus"></i
+                  ><input
+                    id="teamSearch"
+                    placeholder="Search Pokémon to add…"
+                  /><button class="btn primary" id="teamAddBtn">Add</button>
+                </div>
+                <div id="teamSuggestions" class="suggestion-row"></div>
+              </div>
+              <aside id="teamAnalysis" class="panel sticky-panel"></aside>
+            </div>
+            <div class="panel saved-teams">
+              <div class="section-head"><h3>Saved Teams</h3></div>
+              <div id="savedTeams"></div>
+            </div>
+          </section>
 
-      <!-- DAMAGE / STATS CALC -->
-      <section class="page" id="page-damage"><div class="page-head"><div><span class="eyebrow">LAB / CALCULATOR</span><h1>Damage Calculator</h1><p>Estimate damage using base stats and type effectiveness. This is a simplified lab model.</p></div></div><div class="calculator-grid"><div class="calculator-card"><div class="field"><label>Attacker</label><input id="dmgAttacker" value="Pikachu"></div><div class="field"><label>Defender</label><input id="dmgDefender" value="Charizard"></div><div class="field"><label>Move power</label><input id="dmgPower" type="number" value="90" min="1"></div><div class="field"><label>Attacking type</label><select id="dmgType"></select></div><div class="field"><label>Level</label><input id="dmgLevel" type="number" value="50" min="1" max="100"></div><button class="btn primary wide" id="damageCalc"><i class="fa-solid fa-bolt"></i> Calculate Estimate</button></div><div id="damageResult" class="calculator-result"></div></div></section>
-      <section class="page" id="page-statsCalc"><div class="page-head"><div><span class="eyebrow">LAB / CALCULATOR</span><h1>Stat Calculator</h1><p>Explore base stats and level-scaled estimates.</p></div></div><div class="calculator-grid"><div class="calculator-card"><div class="field"><label>Pokémon</label><input id="statPokemon" value="Pikachu"></div><div class="field"><label>Level</label><input id="statLevel" type="number" value="50" min="1" max="100"></div><button class="btn primary wide" id="statCalc"><i class="fa-solid fa-calculator"></i> Calculate Stats</button></div><div id="statResult" class="calculator-result"></div></div></section>
+          <!-- COMPARE -->
+          <section class="page" id="page-compare">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">LAB / COMPARISON</span>
+                <h1>Compare Pokémon</h1>
+                <p>
+                  Add two to four Pokémon and compare their raw data without an
+                  overall winner score.
+                </p>
+              </div>
+            </div>
+            <div class="search-box large">
+              <i class="fa-solid fa-plus"></i
+              ><input
+                id="compareSearch"
+                placeholder="Add Pikachu, Charizard…"
+              /><button class="btn primary" id="compareAddBtn">Add</button>
+            </div>
+            <div id="compareSuggestions" class="suggestion-row"></div>
+            <div id="compareResult" class="compare-table-wrap"></div>
+          </section>
 
-      <!-- BATTLE -->
-      <section class="page" id="page-battle"><div class="page-head"><div><span class="eyebrow">BATTLE LAB / QUICK BATTLE</span><h1>Battle Simulator</h1><p>A simplified turn-based battle using the Pokémon data available from PokéAPI.</p></div><button class="btn ghost" id="resetBattle"><i class="fa-solid fa-rotate-left"></i> Reset</button></div><div class="battle-setup"><div class="battle-input"><label>Your Pokémon</label><div class="search-box"><i class="fa-solid fa-user"></i><input id="battleOne" value="Pikachu"></div></div><div class="vs-badge">VS</div><div class="battle-input"><label>Opponent</label><div class="search-box"><i class="fa-solid fa-skull-crossbones"></i><input id="battleTwo" value="Charizard"></div></div><button class="btn primary" id="startBattle"><i class="fa-solid fa-play"></i> Start Battle</button></div><div id="battleArena" class="battle-arena"></div></section>
-      <section class="page" id="page-battleHistory"><div class="page-head"><div><span class="eyebrow">BATTLE / HISTORY</span><h1>Battle History</h1><p>Your latest simulator results.</p></div><button class="btn ghost" id="clearBattleHistory"><i class="fa-solid fa-trash"></i> Clear</button></div><div id="battleHistoryList" class="history-cards"></div></section>
+          <!-- TYPE LAB -->
+          <section class="page" id="page-typeLab">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">LAB / TYPE EFFECTIVENESS</span>
+                <h1>Type Lab</h1>
+                <p>Investigate how attacking and defending types interact.</p>
+              </div>
+            </div>
+            <div class="type-lab-controls">
+              <div class="field">
+                <label>Attacking type</label
+                ><select id="attackType"></select>
+              </div>
+              <div class="field">
+                <label>Defending type 1</label
+                ><select id="defType1"></select>
+              </div>
+              <div class="field">
+                <label>Defending type 2 <small>(optional)</small></label
+                ><select id="defType2">
+                  <option value="">None</option>
+                </select>
+              </div>
+            </div>
+            <div id="typeLabResult" class="effect-result"></div>
+            <div class="panel matrix-panel">
+              <div class="section-head">
+                <h3>Type Matrix</h3>
+                <span>×2 super effective · ×0.5 resisted · ×0 immune</span>
+              </div>
+              <div id="typeMatrix" class="type-matrix"></div>
+            </div>
+          </section>
 
-      <!-- MYSTERY -->
-      <section class="page" id="page-mystery"><div class="page-head"><div><span class="eyebrow">GAMES / MYSTERY LAB</span><h1>Mystery Card</h1><p>Reveal a random research card. Rarity is a Lab category, not an official TCG rarity.</p></div><div class="streak-pill"><i class="fa-solid fa-fire"></i> Streak <b id="mysteryStreak">0</b></div></div><div class="mystery-layout"><div class="mystery-stage"><div id="mysteryCard" class="mystery-card"><div class="mystery-back"><div class="mystery-pokeball">◓</div><b>?</b><small>POKÉMON LAB</small></div><div id="mysteryFront" class="mystery-front"></div></div><button class="btn primary mystery-reveal" id="mysteryBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> Reveal Mystery Card</button></div><aside class="panel mystery-side"><div class="section-head"><h3>Recent Reveals</h3><button class="text-btn" id="clearMystery">Clear</button></div><div id="mysteryHistory" class="reveal-history"></div></aside></div></section>
+          <!-- DAMAGE / STATS CALC -->
+          <section class="page" id="page-damage">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">LAB / CALCULATOR</span>
+                <h1>Damage Calculator</h1>
+                <p>
+                  Estimate damage using base stats and type effectiveness. This
+                  is a simplified lab model.
+                </p>
+              </div>
+            </div>
+            <div class="calculator-grid">
+              <div class="calculator-card">
+                <div class="field">
+                  <label>Attacker</label
+                  ><input id="dmgAttacker" value="Pikachu" />
+                </div>
+                <div class="field">
+                  <label>Defender</label
+                  ><input id="dmgDefender" value="Charizard" />
+                </div>
+                <div class="field">
+                  <label>Move power</label
+                  ><input id="dmgPower" type="number" value="90" min="1" />
+                </div>
+                <div class="field">
+                  <label>Attacking type</label
+                  ><select id="dmgType"></select>
+                </div>
+                <div class="field">
+                  <label>Level</label
+                  ><input
+                    id="dmgLevel"
+                    type="number"
+                    value="50"
+                    min="1"
+                    max="100"
+                  />
+                </div>
+                <button class="btn primary wide" id="damageCalc">
+                  <i class="fa-solid fa-bolt"></i> Calculate Estimate
+                </button>
+              </div>
+              <div id="damageResult" class="calculator-result"></div>
+            </div>
+          </section>
+          <section class="page" id="page-statsCalc">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">LAB / CALCULATOR</span>
+                <h1>Stat Calculator</h1>
+                <p>Explore base stats and level-scaled estimates.</p>
+              </div>
+            </div>
+            <div class="calculator-grid">
+              <div class="calculator-card">
+                <div class="field">
+                  <label>Pokémon</label
+                  ><input id="statPokemon" value="Pikachu" />
+                </div>
+                <div class="field">
+                  <label>Level</label
+                  ><input
+                    id="statLevel"
+                    type="number"
+                    value="50"
+                    min="1"
+                    max="100"
+                  />
+                </div>
+                <button class="btn primary wide" id="statCalc">
+                  <i class="fa-solid fa-calculator"></i> Calculate Stats
+                </button>
+              </div>
+              <div id="statResult" class="calculator-result"></div>
+            </div>
+          </section>
 
-      <!-- QUIZ -->
-      <section class="page" id="page-quiz"><div class="page-head"><div><span class="eyebrow">GAMES / QUIZ LAB</span><h1>Who's That Pokémon?</h1><p>Choose a mode and build your streak.</p></div></div><div class="quiz-modes"><button class="mode active" data-quizmode="silhouette">Silhouette</button><button class="mode" data-quizmode="multiple">Multiple Choice</button><button class="mode" data-quizmode="type">Type Quiz</button><button class="mode" data-quizmode="evolution">Evolution</button><button class="mode" data-quizmode="stats">Stat Quiz</button></div><div class="quiz-shell" id="quizShell"></div></section>
-      <section class="page" id="page-cryQuiz"><div class="page-head"><div><span class="eyebrow">GAMES / CRY QUIZ</span><h1>Cry Quiz</h1><p>Listen to a Pokémon cry when available and identify it.</p></div></div><div id="cryShell" class="quiz-shell"></div></section>
-      <section class="page" id="page-daily"><div class="page-head"><div><span class="eyebrow">GAMES / DAILY</span><h1>Daily Challenge</h1><p>A small mission that rotates each local calendar day.</p></div></div><div id="dailyChallenge" class="daily-page"></div></section>
+          <!-- BATTLE -->
+          <section class="page" id="page-battle">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">BATTLE LAB / QUICK BATTLE</span>
+                <h1>Battle Simulator</h1>
+                <p>
+                  A simplified turn-based battle using the Pokémon data
+                  available from PokéAPI.
+                </p>
+              </div>
+              <button class="btn ghost" id="resetBattle">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+            </div>
+            <div class="battle-setup">
+              <div class="battle-input">
+                <label>Your Pokémon</label>
+                <div class="search-box">
+                  <i class="fa-solid fa-user"></i
+                  ><input id="battleOne" value="Pikachu" />
+                </div>
+              </div>
+              <div class="vs-badge">VS</div>
+              <div class="battle-input">
+                <label>Opponent</label>
+                <div class="search-box">
+                  <i class="fa-solid fa-skull-crossbones"></i
+                  ><input id="battleTwo" value="Charizard" />
+                </div>
+              </div>
+              <button class="btn primary" id="startBattle">
+                <i class="fa-solid fa-play"></i> Start Battle
+              </button>
+            </div>
+            <div id="battleArena" class="battle-arena"></div>
+          </section>
+          <section class="page" id="page-battleHistory">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">BATTLE / HISTORY</span>
+                <h1>Battle History</h1>
+                <p>Your latest simulator results.</p>
+              </div>
+              <button class="btn ghost" id="clearBattleHistory">
+                <i class="fa-solid fa-trash"></i> Clear
+              </button>
+            </div>
+            <div id="battleHistoryList" class="history-cards"></div>
+          </section>
 
-      <!-- REGIONS -->
-      <section class="page" id="page-regions"><div class="page-head"><div><span class="eyebrow">POKÉDEX / REGIONS</span><h1>Regions</h1><p>Explore generations and open their Pokémon lists.</p></div></div><div id="regionsGrid" class="regions-grid"></div></section>
+          <!-- MYSTERY -->
+          <section class="page" id="page-mystery">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">GAMES / MYSTERY LAB</span>
+                <h1>Mystery Card</h1>
+                <p>
+                  Reveal a random research card. Rarity is a Lab category, not
+                  an official TCG rarity.
+                </p>
+              </div>
+              <div class="streak-pill">
+                <i class="fa-solid fa-fire"></i> Streak
+                <b id="mysteryStreak">0</b>
+              </div>
+            </div>
+            <div class="mystery-layout">
+              <div class="mystery-stage">
+                <div id="mysteryCard" class="mystery-card">
+                  <div class="mystery-back">
+                    <div class="mystery-pokeball">◓</div>
+                    <b>?</b><small>POKÉMON LAB</small>
+                  </div>
+                  <div id="mysteryFront" class="mystery-front"></div>
+                </div>
+                <button class="btn primary mystery-reveal" id="mysteryBtn">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Reveal Mystery
+                  Card
+                </button>
+              </div>
+              <aside class="panel mystery-side">
+                <div class="section-head">
+                  <h3>Recent Reveals</h3>
+                  <button class="text-btn" id="clearMystery">Clear</button>
+                </div>
+                <div id="mysteryHistory" class="reveal-history"></div>
+              </aside>
+            </div>
+          </section>
 
-      <!-- TRAINER -->
-      <section class="page" id="page-trainer"><div class="page-head"><div><span class="eyebrow">TRAINER</span><h1>Trainer Profile</h1><p>Your local profile, progression and research activity.</p></div></div><div id="trainerPageContent" class="trainer-grid"></div></section>
-      <section class="page" id="page-achievements"><div class="page-head"><div><span class="eyebrow">TRAINER / ACHIEVEMENTS</span><h1>Achievements</h1><p>Milestones unlocked through normal app activity.</p></div></div><div id="achievementGrid" class="achievement-grid"></div></section>
-      <section class="page" id="page-analytics"><div class="page-head"><div><span class="eyebrow">TRAINER / ANALYTICS</span><h1>Lab Analytics</h1><p>Personal research statistics. Nothing here is an official competitive ranking.</p></div></div><div id="analyticsContent"></div></section>
+          <!-- QUIZ -->
+          <section class="page" id="page-quiz">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">GAMES / QUIZ LAB</span>
+                <h1>Who's That Pokémon?</h1>
+                <p>Choose a mode and build your streak.</p>
+              </div>
+            </div>
+            <div class="quiz-modes">
+              <button class="mode active" data-quizmode="silhouette">
+                Silhouette</button
+              ><button class="mode" data-quizmode="multiple">
+                Multiple Choice</button
+              ><button class="mode" data-quizmode="type">Type Quiz</button
+              ><button class="mode" data-quizmode="evolution">Evolution</button
+              ><button class="mode" data-quizmode="stats">Stat Quiz</button>
+            </div>
+            <div class="quiz-shell" id="quizShell"></div>
+          </section>
+          <section class="page" id="page-cryQuiz">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">GAMES / CRY QUIZ</span>
+                <h1>Cry Quiz</h1>
+                <p>Listen to a Pokémon cry when available and identify it.</p>
+              </div>
+            </div>
+            <div id="cryShell" class="quiz-shell"></div>
+          </section>
+          <section class="page" id="page-daily">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">GAMES / DAILY</span>
+                <h1>Daily Challenge</h1>
+                <p>A small mission that rotates each local calendar day.</p>
+              </div>
+            </div>
+            <div id="dailyChallenge" class="daily-page"></div>
+          </section>
+
+          <!-- REGIONS -->
+          <section class="page" id="page-regions">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">POKÉDEX / REGIONS</span>
+                <h1>Regions</h1>
+                <p>Explore generations and open their Pokémon lists.</p>
+              </div>
+            </div>
+            <div id="regionsGrid" class="regions-grid"></div>
+          </section>
+
+          <!-- TRAINER -->
+          <section class="page" id="page-trainer">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">TRAINER</span>
+                <h1>Trainer Profile</h1>
+                <p>Your local profile, progression and research activity.</p>
+              </div>
+            </div>
+            <div id="trainerPageContent" class="trainer-grid"></div>
+          </section>
+          <section class="page" id="page-achievements">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">TRAINER / ACHIEVEMENTS</span>
+                <h1>Achievements</h1>
+                <p>Milestones unlocked through normal app activity.</p>
+              </div>
+            </div>
+            <div id="achievementGrid" class="achievement-grid"></div>
+          </section>
+          <section class="page" id="page-analytics">
+            <div class="page-head">
+              <div>
+                <span class="eyebrow">TRAINER / ANALYTICS</span>
+                <h1>Lab Analytics</h1>
+                <p>
+                  Personal research statistics. Nothing here is an official
+                  competitive ranking.
+                </p>
+              </div>
+            </div>
+            <div id="analyticsContent"></div>
+          </section>
+        </div>
+      </main>
     </div>
-  </main>
-</div>
 
-<div id="modalRoot"></div>
-<script src="script.js"></script>
-</body>
+    <div id="modalRoot"></div>
+    <script src="script.js"></script>
+  </body>
 </html>
