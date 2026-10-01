@@ -87,3 +87,247 @@ body.light{--bg:#f2f6fb;--bg2:#fff;--panel:#fff;--panel2:#f6f9fd;--line:#dbe4ef;
     box-shadow: 0 12px 30px #0003;
     transition: .2s;
 }
+
+.nav-group:not(.open) .nav-sub {
+    max-height: 0;
+    grid-template-rows: none;
+}
+
+.nav-group:not(.open) .nav-sub {
+    grid-template-rows: 0fr;
+}
+.nav-sub {
+    transition: max-height .25s 
+ease;
+}
+.nav-sub {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows .25s ease;
+    overflow: hidden;
+}
+.modal-overlay.open {
+  display: grid
+;
+}
+
+
+.primary-btn {
+  background: linear-gradient(100deg, #7130ff, #db38dc);
+  color: #fff;
+  box-shadow: 0 7px 20px #7c35ff33;
+}
+
+.primary-btn, .secondary-btn, .danger-btn, .text-btn {
+  border-radius: 10px;
+  padding: 11px 15px;
+  border: 1px solid transparent;
+  font-size: 10px;
+  font-weight: 700;
+  transition: .2s;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #020817cc;
+  backdrop-filter: blur(8px);
+  display: none;
+  place-items: center;
+  padding: 20px;
+}
+
+.detail-modal {
+  position: relative;
+  width: min(1120px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  background: #07152e;
+  border: 1px solid #285887;
+  border-radius: 20px;
+  box-shadow: 0 30px 90px #000b;
+}
+.detail-wrap {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: 520px;
+}
+.detail-visual {
+  background: radial-gradient(circle at 50% 40%, #194783, #061329 65%);
+  display: grid;
+  place-items: center;
+  padding: 25px;
+}
+.detail-visual img {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  filter: drop-shadow(0 25px 18px #0009);
+}
+.detail-content {
+  padding: 28px;
+}
+.detail-content .number {
+  font-size: 9px;
+}
+.card-types, .result-types, .battle-type {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.detail-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.detail-section {
+  margin-top: 18px;
+}
+
+.detail-section h3 {
+  font: 700 13px var(--display);
+  margin: 0 0 9px;
+}
+.description {
+  font-size: 10px;
+  color: #91a8c2;
+  line-height: 1.8;
+}
+
+.bio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.bio-grid div {
+  padding: 9px;
+  border-radius: 8px;
+  background: #0b2244;
+}
+
+.detail-section h3 {
+  font: 700 13px var(--display);
+  margin: 0 0 9px;
+}
+
+.bar-list {
+  display: grid
+;
+  gap: 9px;
+}
+
+.stat-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #35a7ff, #a34dff);
+  border-radius: inherit;
+}
+.stat-bar>div {
+  height: 6px;
+  background: #173252;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.weakness-grid {
+  display: flex
+;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.weakness-grid span {
+  padding: 7px 10px;
+  border-radius: 15px;
+  font-size: 9px;
+}
+
+.evolution-tree {
+  display: flex;flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  overflow: auto;
+  padding: 10px 2px;
+}
+
+.evo-node {
+  min-width: 125px;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #1d4b7b;
+  border-radius: 12px;
+  background: #0a2142;
+}
+
+.evo-node img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.evo-node b {
+  display: block;
+  font-size: 10px;
+}
+.evo-arrow {
+  color: #6286ac;
+}
+
+.stat-bar {
+  display: grid
+;
+  grid-template-columns: 75px 1fr 30px;
+  gap: 8px;
+  align-items: center;
+  font-size: 8px;
+}
+.form-grid {
+  display: flex
+;
+  gap: 10px;
+  overflow: auto;
+} img {
+  max-width: 100%;
+}
+
+.info-side h3 {
+  font: 700 14px var(--display);
+  margin: 0 0 10px;
+}
+.info-side {
+  padding: 22px;
+}
+.move-list, .ability-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.move-list div, .ability-list div {
+  padding: 8px 9px;
+  border: 1px solid #163a61;
+  background: #0a2141;
+  border-radius: 8px;
+  font-size: 9px;
+}
+
+.bio-grid b, .profile-grid b {
+  font-size: 10px;
+}
+
+.bio-grid span, .profile-grid span {
+  display: block;
+  color: #7891ad;
+  font-size: 8px;
+}
+.form-grid img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  background: #0a2141;
+  border-radius: 10px;
+}
+
+
