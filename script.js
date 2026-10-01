@@ -41,16 +41,52 @@ $('globalSearch').addEventListener('keydown',async e=>{if(e.key!=='Enter')return
 async function searchPokemon(q){const value=(q??$('pokemonSearch').value).trim().toLowerCase();if(!value){$('pokedexResult').innerHTML=empty('fa-magnifying-glass','Search the Pokédex','Type a Pokémon name or Pokédex number above.');return}$('pokedexResult').innerHTML=loading(`Researching ${cap(value)}…`);try{const p=await getPokemon(value);recordRecent(p);addActivity(`Viewed ${cap(p.name)}`);awardXP(3);$('pokedexResult').innerHTML=detailResult(p)}catch(e){$('pokedexResult').innerHTML=errorState('Pokémon not found','Try a valid name such as Pikachu or a Pokédex number such as 25.')}}
 $('pokemonSearchBtn').addEventListener('click',()=>searchPokemon());$('pokemonSearch').addEventListener('keydown',e=>{if(e.key==='Enter')searchPokemon()});qsa('[data-search]').forEach(b=>b.addEventListener('click',()=>{showPage('pokedex');$('pokemonSearch').value=b.dataset.search;searchPokemon(b.dataset.search)}));
 async function loadFeaturedPokedex(){if($('pokedexResult').dataset.loaded)return;$('pokedexResult').innerHTML=loading('Loading online Pokédex…');try{const ids=[1,4,7,25,39,52,54,133,150,151,155,196];const ps=await Promise.all(ids.map(getPokemon));$('pokedexResult').innerHTML=`<div class="section-head"><div><span class="eyebrow">ONLINE POKÉDEX</span><h3>Featured records</h3></div><span>${ps.length} records loaded</span></div><div class="pokemon-grid">${ps.map(p=>cardHTML(p)).join('')}</div>`;$('pokedexResult').dataset.loaded='1'}catch{$('pokedexResult').innerHTML=errorState('Online Pokédex unavailable','Check your internet connection and retry.')}}
-function cardHTML(p,{collectionCard=false,shiny=false}={}){const fav=state.favorites.includes(p.name);const col=!!state.collection[p.name];const img=shiny?shinyImageOf(p):imageOf(p);return `<article class="pokemon-card" style="--accent:${TYPE_COLORS[p.types[0]?.type.name]||'#708090'}"><div class="card-top"><span class="hp"><i class="fa-solid fa-heart-pulse"></i> ${p.stats?.[0]?.base_stat??'—'} HP</span><span class="dex">#${String(p.id).padStart(3,'0')}</span></div><img src="${img}" alt="${esc(p.name)}" loading="lazy"><h3>${esc(p.name)}</h3><div class="card-types">${(p.types||[]).map(t=>typeBadge(t.type.name)).join('')}</div><div class="card-stats"><div><b>${p.stats?.[1]?.base_stat??'—'}</b><span>ATTACK</span></div><div><b>${p.stats?.[2]?.base_stat??'—'}</b><span>DEFENSE</span></div><div><b>${p.stats?.[5]?.base_stat??'—'}</b><span>SPEED</span></div></div><div class="card-actions"><button class="mini-btn" data-info="${esc(p.name)}"><i class="fa-solid fa-circle-info"></i> Info</button><button class="mini-btn ${fav?'active':''}" data-favorite="${esc(p.name)}" title="Favorite"><i class="fa-${fav?'solid':'regular'} fa-heart"></i></button><button class="mini-btn ${state.shiny.includes(p.name)?'active':''}" data-shiny="${esc(p.name)}" title="Shiny collected"><i class="fa-solid fa-star"></i></button><button class="mini-btn ${col?'active':''}" data-collect="${esc(p.name)}" title="Collection"><i class="fa-solid fa-${col?'check':'plus'}"></i></button></div></article>`}
-document.addEventListener('click',async e=>{const info=e.target.closest('[data-info]');if(info){openInfo(info.dataset.info);return}const fav=e.target.closest('[data-favorite]');if(fav){toggleFavorite(fav.dataset.favorite);return}const shiny=e.target.closest('[data-shiny]');if(shiny){toggleShiny(shiny.dataset.shiny);return}const col=e.target.closest('[data-collect]');if(col){toggleCollection(col.dataset.collect);return}const evo=e.target.closest('[data-evo]');if(evo)openInfo(evo.dataset.evo)});
-async function openInfo(name){showPage('info');$('infoSearch').value=name;$('infoResult').innerHTML=loading('Building research profile…');try{const p=await getPokemon(name);recordRecent(p);const species=await api(`pokemon-species/${p.id}`);const chain=await api(species.evolution_chain.url.replace(API,''));$('infoResult').innerHTML=infoHTML(p,species,chain);awardXP(5)}catch(e){$('infoResult').innerHTML=errorState('Research data unavailable','The Pokémon record loaded partially or the evolution data could not be reached.')}}
+function cardHTML(p,{collectionCard=false,shiny=false}={}){const fav=state.favorites.includes(p.name);const col=!!state.collection[p.name];const img=shiny?shinyImageOf(p):imageOf(p);return `<article class="pokemon-card" style="--accent:${TYPE_COLORS[p.types[0]?.type.name]||'#708090'}"><div class="card-top"><span class="hp"><i class="fa-solid fa-heart-pulse"></i> ${p.stats?.[0]?.base_stat??'—'} HP</span><span class="dex">#${String(p.id).padStart(3,'0')}</span></div><img src="${img}" alt="${esc(p.name)}" loading="lazy"><h3>${esc(p.name)}</h3><div class="card-types">${(p.types||[]).map(t=>typeBadge(t.type.name)).join('')}</div><div class="card-stats"><div><b>${p.stats?.[1]?.base_stat??'—'}</b><span>ATTACK</span></div><div><b>${p.stats?.[2]?.base_stat??'—'}</b><span>DEFENSE</span></div><div><b>${p.stats?.[5]?.base_stat??'—'}</b><span>SPEED</span></div></div><div class="card-actions"><button class="mini-btn" data-detail="${esc(p.name)}"><i class="fa-solid fa-circle-info"></i> Info</button><button class="mini-btn ${fav?'active':''}" data-favorite="${esc(p.name)}" title="Favorite"><i class="fa-${fav?'solid':'regular'} fa-heart"></i></button><button class="mini-btn ${state.shiny.includes(p.name)?'active':''}" data-shiny="${esc(p.name)}" title="Shiny collected"><i class="fa-solid fa-star"></i></button><button class="mini-btn ${col?'active':''}" data-collect="${esc(p.name)}" title="Collection"><i class="fa-solid fa-${col?'check':'plus'}"></i></button></div></article>`}
+document.addEventListener('click',async e=>{const detail=e.target.closest('[data-detail]');if(detail){openDetail(detail.dataset.detail);return}const info=e.target.closest('[data-info]');if(info){openInfo(info.dataset.info);return}const openInfoBtn=e.target.closest('[data-open-info]');if(openInfoBtn){openInfo(openInfoBtn.dataset.openInfo);return}const fav=e.target.closest('[data-favorite]');if(fav){e.stopPropagation();toggleFavorite(fav.dataset.favorite);return}const shiny=e.target.closest('[data-shiny]');if(shiny){toggleShiny(shiny.dataset.shiny);return}const col=e.target.closest('[data-collect]');if(col){toggleCollection(col.dataset.collect);return}const evo=e.target.closest('[data-evo]');if(evo){openInfo(evo.dataset.evo);return}});
+async function openInfo(name){
+  const value=String(name||'').trim().toLowerCase();
+  showPage('info');
+  if(!$('infoResult')) return;
+  if($('infoSearch')) $('infoSearch').value=value;
+  $('infoResult').innerHTML=loading('Building research profile…');
+  if(!value){
+    $('infoResult').innerHTML=errorState('Enter a Pokémon name','Try Pikachu, Charizard or a Pokédex number such as 25.');
+    return;
+  }
+  try{
+    console.log('Info API: fetching Pokémon',value);
+    const p=await getPokemon(value);
+    console.log('Info API: Pokémon loaded',p);
+    recordRecent(p);
+
+    let species=null;
+    let chain=null;
+    try{
+      species=await api(`pokemon-species/${p.id}`);
+      console.log('Info API: species loaded',species);
+      if(species?.evolution_chain?.url){
+        chain=await api(species.evolution_chain.url.replace(API,''));
+        console.log('Info API: evolution chain loaded',chain);
+      }
+    }catch(optionalError){
+      console.warn('Info API: optional species/evolution data failed',optionalError);
+    }
+
+    $('infoResult').innerHTML=await infoHTML(p,species,chain);
+    console.log('Info UI: rendered into #infoResult');
+    awardXP(5);
+  }catch(e){
+    console.error('Info API error:',e);
+    $('infoResult').innerHTML=errorState('Pokémon data could not be loaded',String(e?.message||'Check your internet connection and Pokémon name.'));
+  }
+}
 function detailResult(p){return `<div class="info-hero"><div class="info-art"><img src="${imageOf(p)}" alt="${esc(p.name)}"></div><div class="info-copy"><span class="dex">#${String(p.id).padStart(3,'0')}</span><h2>${esc(p.name)}</h2><div class="card-types" style="justify-content:flex-start">${p.types.map(t=>typeBadge(t.type.name)).join('')}</div><p>${esc(p.flavor_text||'Research record loaded from PokéAPI.')}</p><div class="info-actions"><button class="btn primary" data-collect="${esc(p.name)}"><i class="fa-solid fa-plus"></i> Add to Collection</button><button class="btn ghost" data-favorite="${esc(p.name)}"><i class="fa-regular fa-heart"></i> Favorite</button><button class="btn ghost" data-page="info" data-open-info="${esc(p.name)}"><i class="fa-solid fa-dna"></i> Full Info</button></div><div class="data-row"><span>Height</span><b>${p.height/10} m</b></div><div class="data-row"><span>Weight</span><b>${p.weight/10} kg</b></div></div></div><div class="info-grid" style="margin-top:14px"><div class="data-panel"><h3>Base Stats</h3>${statBars(p)}</div><div class="data-panel"><h3>Abilities</h3><div class="coverage-list">${p.abilities.map(a=>`<span>${cap(a.ability.name)}</span>`).join('')}</div></div></div>`}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-open-info]');if(b)openInfo(b.dataset.openInfo)});
+
 function statBars(p){const max=180;return `<div class="stat-bars">${p.stats.map(s=>`<div class="stat-line"><span>${cap(s.stat.name)}</span><div><i style="width:${Math.min(100,s.base_stat/max*100)}%"></i></div><b>${s.base_stat}</b></div>`).join('')}</div>`}
 function flattenChain(node,arr=[]){if(!node)return arr;arr.push({name:node.species.name,details:node.evolution_details?.[0]||null});node.evolves_to?.forEach(n=>flattenChain(n,arr));return arr}
-async function infoHTML(p,species,chain){const nodes=flattenChain(chain);const ps=await Promise.all(nodes.map(n=>getPokemon(n.name).catch(()=>null)));const moves=p.moves.slice(0,12).map(m=>m.move.name);const flavor=species.flavor_text_entries?.find(x=>x.language.name==='en')?.flavor_text?.replace(/\s+/g,' ')||'No English flavor text available.';return `<div class="info-hero"><div class="info-art"><img src="${imageOf(p)}" alt="${esc(p.name)}"></div><div class="info-copy"><span class="dex">#${String(p.id).padStart(3,'0')} · ${cap(species.generation?.name||'')}</span><h2>${esc(p.name)}</h2><div class="card-types" style="justify-content:flex-start">${p.types.map(t=>typeBadge(t.type.name)).join('')}</div><p>${esc(flavor)}</p><div class="info-actions"><button class="btn primary" data-collect="${esc(p.name)}"><i class="fa-solid fa-plus"></i> Add to Collection</button><button class="btn ghost" data-favorite="${esc(p.name)}"><i class="fa-regular fa-heart"></i> Favorite</button><button class="btn ghost" data-page="battle"><i class="fa-solid fa-bolt"></i> Battle</button>${p.cries?.latest?`<button class="btn ghost" data-cry="${esc(p.name)}"><i class="fa-solid fa-volume-high"></i> Play Cry</button>`:''}</div><div class="data-row"><span>Height / Weight</span><b>${p.height/10} m · ${p.weight/10} kg</b></div></div></div><div class="info-tabs"><button class="info-tab active">OVERVIEW</button><button class="info-tab">EVOLUTION</button><button class="info-tab">STATS</button><button class="info-tab">MOVES</button><button class="info-tab">ABILITIES</button></div><div class="info-grid"><div class="data-panel"><h3>Stats</h3>${statBars(p)}</div><div class="data-panel"><h3>Abilities</h3><div class="coverage-list">${p.abilities.map(a=>`<span>${cap(a.ability.name)}</span>`).join('')}</div><h3 style="margin-top:18px">Forms</h3><div class="data-list"><div class="data-row"><span>Default</span><b>${p.is_default?'Yes':'Alternate form'}</b></div><div class="data-row"><span>Base experience</span><b>${p.base_experience||'—'}</b></div></div></div><div class="data-panel" style="grid-column:1/-1"><h3>Evolution Chain</h3><div class="evolution-chain">${ps.filter(Boolean).map((x,i)=>`${i?'<span class="evo-arrow"><i class="fa-solid fa-arrow-right"></i></span>':''}<div class="evo-node" data-evo="${esc(x.name)}"><img src="${imageOf(x)}" alt="${esc(x.name)}"><b>${esc(x.name)}</b><small>#${x.id}</small></div>`).join('')}</div></div><div class="data-panel"><h3>Moves</h3><div class="coverage-list">${moves.map(m=>`<span>${cap(m)}</span>`).join('')}</div></div><div class="data-panel"><h3>Type Profile</h3><div class="card-types" style="justify-content:flex-start">${p.types.map(t=>typeBadge(t.type.name)).join('')}</div><p style="font-size:9px;color:var(--muted);line-height:1.6">Use the Type Lab for detailed offensive/defensive effectiveness.</p></div></div>`}
+async function infoHTML(p,species,chain){species=species||{};const nodes=flattenChain(chain||null);const ps=await Promise.all(nodes.map(n=>getPokemon(n.name).catch(()=>null)));const moves=p.moves.slice(0,12).map(m=>m.move.name);const flavor=species.flavor_text_entries?.find(x=>x.language?.name==='en')?.flavor_text?.replace(/\s+/g,' ')||'No English flavor text available.';return `<div class="info-hero"><div class="info-art"><img src="${imageOf(p)}" alt="${esc(p.name)}"></div><div class="info-copy"><span class="dex">#${String(p.id).padStart(3,'0')} · ${cap(species.generation?.name||'')}</span><h2>${esc(p.name)}</h2><div class="card-types" style="justify-content:flex-start">${p.types.map(t=>typeBadge(t.type.name)).join('')}</div><p>${esc(flavor)}</p><div class="info-actions"><button class="btn primary" data-collect="${esc(p.name)}"><i class="fa-solid fa-plus"></i> Add to Collection</button><button class="btn ghost" data-favorite="${esc(p.name)}"><i class="fa-regular fa-heart"></i> Favorite</button><button class="btn ghost" data-page="battle"><i class="fa-solid fa-bolt"></i> Battle</button>${p.cries?.latest?`<button class="btn ghost" data-cry="${esc(p.name)}"><i class="fa-solid fa-volume-high"></i> Play Cry</button>`:''}</div><div class="data-row"><span>Height / Weight</span><b>${p.height/10} m · ${p.weight/10} kg</b></div></div></div><div class="info-tabs"><button class="info-tab active">OVERVIEW</button><button class="info-tab">EVOLUTION</button><button class="info-tab">STATS</button><button class="info-tab">MOVES</button><button class="info-tab">ABILITIES</button></div><div class="info-grid"><div class="data-panel"><h3>Stats</h3>${statBars(p)}</div><div class="data-panel"><h3>Abilities</h3><div class="coverage-list">${p.abilities.map(a=>`<span>${cap(a.ability.name)}</span>`).join('')}</div><h3 style="margin-top:18px">Forms</h3><div class="data-list"><div class="data-row"><span>Default</span><b>${p.is_default?'Yes':'Alternate form'}</b></div><div class="data-row"><span>Base experience</span><b>${p.base_experience||'—'}</b></div></div></div><div class="data-panel" style="grid-column:1/-1"><h3>Evolution Chain</h3><div class="evolution-chain">${ps.filter(Boolean).map((x,i)=>`${i?'<span class="evo-arrow"><i class="fa-solid fa-arrow-right"></i></span>':''}<div class="evo-node" data-evo="${esc(x.name)}"><img src="${imageOf(x)}" alt="${esc(x.name)}"><b>${esc(x.name)}</b><small>#${x.id}</small></div>`).join('')}</div></div><div class="data-panel"><h3>Moves</h3><div class="coverage-list">${moves.map(m=>`<span>${cap(m)}</span>`).join('')}</div></div><div class="data-panel"><h3>Type Profile</h3><div class="card-types" style="justify-content:flex-start">${p.types.map(t=>typeBadge(t.type.name)).join('')}</div><p style="font-size:9px;color:var(--muted);line-height:1.6">Use the Type Lab for detailed offensive/defensive effectiveness.</p></div></div>`}
 document.addEventListener('click',e=>{const c=e.target.closest('[data-cry]');if(c)playCry(c.dataset.cry)});async function playCry(name){try{const p=await getPokemon(name);if(!p.cries?.latest)return toast('No cry is available for this Pokémon.','error');new Audio(p.cries.latest).play();awardXP(2);toast('Pokémon cry played')}catch{toast('Cry could not be played in this browser.','error')}}
-$('infoSearchBtn').addEventListener('click',()=>openInfo($('infoSearch').value.trim()||'pikachu'));$('infoSearch').addEventListener('keydown',e=>{if(e.key==='Enter')openInfo($('infoSearch').value.trim()||'pikachu')});
+$('infoSearchBtn').addEventListener('click',()=>searchInfoDetail($('infoSearch').value));$('infoSearch').addEventListener('keydown',e=>{if(e.key==='Enter')searchInfoDetail(e.target.value)});
 async function searchByType(type){qsa('.type-filter').forEach(b=>b.classList.toggle('active',b.dataset.type===type));$('selectedType').innerHTML=`<strong>${cap(type)}</strong> · Loading every Pokémon in this type…`;$('typeResult').innerHTML=loading(`Loading ${cap(type)} Pokémon…`);try{const d=await api(`type/${type}`);const urls=d.pokemon.map(x=>x.pokemon.url.replace(API,''));const out=[];for(let i=0;i<urls.length;i+=15){const chunk=await Promise.all(urls.slice(i,i+15).map(api));out.push(...chunk);$('selectedType').textContent=`${cap(type)} · ${out.length} of ${urls.length} records loaded`;$('typeResult').innerHTML=out.map(p=>cardHTML(p)).join('')}$('selectedType').textContent=`${cap(type)} · ${out.length} Pokémon`;addActivity(`Explored ${type} type`);awardXP(4)}catch{$('typeResult').innerHTML=errorState('Type data unavailable','Could not load this type from PokéAPI.')}}
 function buildTypes(){const els=['advType','attackType','defType1','defType2','dmgType'];els.forEach(id=>{const el=$(id);if(!el)return;if(id==='defType2')el.innerHTML='<option value="">None</option>';TYPES.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=cap(t);el.appendChild(o)})});$('typeButtons').innerHTML=TYPES.map(t=>`<button class="type-filter" data-type="${t}"><i class="type-dot" style="background:${TYPE_COLORS[t]}"></i>${cap(t)}</button>`).join('');qsa('.type-filter').forEach(b=>b.addEventListener('click',()=>searchByType(b.dataset.type)))}
 buildTypes();
@@ -120,3 +156,226 @@ $('collectionView').addEventListener('click',()=>{$('collectionGrid').classList.
 window.addEventListener('storage',()=>{state=loadState();updateGlobalUI()});
 setTheme();updateGlobalUI();$('mysteryStreak').textContent=state.mysteryStreak;renderMysteryHistory();renderDailyMini();
 (async()=>{bootAuth();$('appLoader').classList.add('hide');setTimeout(()=>$('appLoader').remove(),400);if(!localStorage.getItem('pokemonLabSession'))return;showPage('home');try{await api('pokemon/25')}catch{} })();
+
+/* Detail + evolution profile */
+const detailOverlay=document.getElementById('detailOverlay');
+const detailBody=document.getElementById('detailBody');
+const detailClose=document.getElementById('detailClose');
+
+if(detailClose) detailClose.onclick=closeDetail;
+if(detailOverlay){
+    detailOverlay.onclick=e=>{if(e.target===detailOverlay)closeDetail()};
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+
+function closeDetail(){
+    if(!detailOverlay)return;
+    detailOverlay.classList.remove('open');
+    detailOverlay.setAttribute('aria-hidden','true');
+}
+
+function detailBar(label,value){
+    const v=Number(value)||0;
+    return `<div class="stat-bar"><span>${esc(label)}</span><div><i style="width:${Math.min(100,v/255*100)}%"></i></div><b>${v}</b></div>`;
+}
+
+function pokemonIdFromUrl(url){
+    const match=String(url||'').match(/\/pokemon-species\/(\d+)\/?$/);
+    return match?Number(match[1]):null;
+}
+
+function detailOfficial(p){return imageOf(p)}
+function detailTypePills(p){return (p.types||[]).map(t=>typeBadge(t.type.name)).join('')}
+function detailPretty(s){return cap(s)}
+
+async function loadDetailProfile(value){
+    const p=await getPokemon(value);
+    await recordRecent(p);
+
+    const sp=await api(`pokemon-species/${p.id}`);
+    const evo=sp.evolution_chain?.url
+        ? await api(sp.evolution_chain.url.replace(API,''))
+        : null;
+
+    const levels=[];
+    if(evo?.chain){
+        const walk=(node,depth=0)=>{
+            if(!levels[depth])levels[depth]=[];
+            levels[depth].push(node.species.name);
+            (node.evolves_to||[]).forEach(child=>walk(child,depth+1));
+        };
+        walk(evo.chain);
+    }
+
+    const ids=[...new Set(levels.flat().filter(Boolean))];
+    const evos=await Promise.all(ids.map(name=>getPokemon(name).catch(()=>null)));
+    const em=new Map(evos.filter(Boolean).map(x=>[x.name,x]));
+
+    const desc=sp.flavor_text_entries?.find(x=>x.language?.name==='en')?.flavor_text
+        ?.replace(/[\n\f]/g,' ')
+        ||'No English Pokédex description is available.';
+
+    const weaknesses=await weaknessesForPokemon(p);
+    const forms=[p,...(p.forms||[]).filter(f=>f.name!==p.name)];
+
+    const detailMarkup=`
+            <div class="detail-wrap">
+                <div class="detail-visual">
+                    <img src="${detailOfficial(p)}" alt="${esc(p.name)}">
+                </div>
+
+                <div class="detail-content">
+                    <span class="number">
+                        #${String(p.id).padStart(4,'0')} • ${esc(detailPretty(sp.generation?.name||''))}
+                    </span>
+                    <h2>${esc(cap(p.name))}</h2>
+
+                    <div class="result-types">
+                        ${detailTypePills(p)}
+                    </div>
+
+                    <div class="detail-actions">
+                        <button class="primary-btn" data-collect="${esc(p.name)}">
+                            ＋ Add to Collection
+                        </button>
+                        <button class="secondary-btn" data-favorite="${esc(p.name)}">
+                            ${state.favorites.includes(p.name)?'♥ Favorited':'♡ Favorite'}
+                        </button>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Overview</h3>
+                        <p class="description">${esc(desc)}</p>
+                        <div class="bio-grid">
+                            <div><span>Height</span><b>${(p.height/10).toFixed(1)} m</b></div>
+                            <div><span>Weight</span><b>${(p.weight/10).toFixed(1)} kg</b></div>
+                            <div><span>Abilities</span><b>${p.abilities?.length||0}</b></div>
+                            <div><span>Forms</span><b>${forms.length}</b></div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Base Stats</h3>
+                        <div class="bar-list">
+                            ${detailBar('HP',p.stats?.find(s=>s.stat.name==='hp')?.base_stat)}
+                            ${detailBar('Attack',p.stats?.find(s=>s.stat.name==='attack')?.base_stat)}
+                            ${detailBar('Defense',p.stats?.find(s=>s.stat.name==='defense')?.base_stat)}
+                            ${detailBar('Sp. Atk',p.stats?.find(s=>s.stat.name==='special-attack')?.base_stat)}
+                            ${detailBar('Sp. Def',p.stats?.find(s=>s.stat.name==='special-defense')?.base_stat)}
+                            ${detailBar('Speed',p.stats?.find(s=>s.stat.name==='speed')?.base_stat)}
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Weaknesses & Resistances</h3>
+                        <div class="weakness-grid">
+                            ${weaknesses.map(x=>`<span style="background:${x.mult>1?'#5a2738':x.mult===0?'#3b3b4e':'#164b3c'}">${cap(x.type)} ×${x.mult}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Evolution Chain</h3>
+                        <div class="evolution-tree">
+                            ${levels.flatMap((level,i)=>[
+                                ...level.map(name=>{
+                                    const q=em.get(name);
+                                    if(!q)return '';
+                                    return `<button class="evo-node" data-detail="${esc(q.name)}">
+                                        <img src="${detailOfficial(q)}" alt="${esc(q.name)}">
+                                        <b>${esc(cap(q.name))}</b>
+                                    </button>`;
+                                }),
+                                i<levels.length-1?'<span class="evo-arrow">→</span>':''
+                            ]).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="info-side full">
+                    <h3>Abilities</h3>
+                    <div class="ability-list">
+                        ${(p.abilities||[]).map(a=>`<div>
+                            ${esc(cap(a.ability.name))}${a.is_hidden?' <small>Hidden</small>':''}
+                        </div>`).join('')}
+                    </div>
+
+                    <h3 style="margin-top:18px">Moves</h3>
+                    <div class="move-list">
+                        ${(p.moves||[]).slice(0,16).map(m=>`<div>${esc(cap(m.move.name))}</div>`).join('')}
+                    </div>
+
+                    <h3 style="margin-top:18px">Forms</h3>
+                    <div class="form-grid">
+                        ${forms.map(f=>`<div>
+                            <img src="${detailOfficial(p)}" alt="${esc(f.name)}">
+                           
+                        </div>`).join('')}
+                    </div>
+                </aside>
+            </div>`;
+
+    return {p, detailMarkup};
+}
+
+async function openDetail(value){
+    if(!detailOverlay||!detailBody)return;
+
+    detailOverlay.classList.add('open');
+    detailOverlay.setAttribute('aria-hidden','false');
+    detailBody.innerHTML='<div class="loading-panel">Loading research profile…</div>';
+
+    try{
+        const {p,detailMarkup}=await loadDetailProfile(value);
+        detailBody.innerHTML=detailMarkup;
+        const infoResult=$('infoResult');
+        if(infoResult)infoResult.innerHTML=detailMarkup;
+    }catch(err){
+        console.error('Detail overlay API error:',err);
+        const detailError='<div class="error-panel"><h2>Research profile unavailable</h2><p>Some Pokémon data could not be loaded. Please retry.</p></div>';
+        detailBody.innerHTML=detailError;
+        const infoResult=$('infoResult');
+        if(infoResult)infoResult.innerHTML=detailError;
+    }
+}
+
+async function searchInfoDetail(value){
+    const name=String(value||'').trim();
+    const infoResult=$('infoResult');
+    if(!infoResult)return;
+    if(!name){
+        infoResult.innerHTML=empty('fa-dna','Search a Pokémon','Enter a Pokémon name or Pokédex number.');
+        return;
+    }
+
+    $('infoSearch').value=name;
+    infoResult.innerHTML=loading(`Building research profile for ${cap(name)}…`);
+
+    try{
+        const {detailMarkup}=await loadDetailProfile(name);
+        infoResult.innerHTML=detailMarkup;
+        console.log('Info search API: rendered detailed profile into #infoResult');
+        awardXP(5);
+    }catch(err){
+        console.error('Info search API error:',err);
+        infoResult.innerHTML=errorState(
+            'Pokémon data could not be loaded',
+            String(err?.message||'Check the Pokémon name/number and your internet connection.')
+        );
+    }
+}
+
+async function weaknessesForPokemon(p){
+    const rel=await Promise.all(
+        (p.types||[]).map(t=>api(`type/${encodeURIComponent(t.type.name)}`))
+    );
+
+    return TYPES.map(t=>{
+        let mult=1;
+        for(const d of rel){
+            if(d.damage_relations.double_damage_from.some(x=>x.name===t))mult*=2;
+            if(d.damage_relations.half_damage_from.some(x=>x.name===t))mult*=.5;
+            if(d.damage_relations.no_damage_from.some(x=>x.name===t))mult=0;
+        }
+        return {type:t,mult};
+    }).filter(x=>x.mult!==1).sort((a,b)=>b.mult-a.mult);
+}
