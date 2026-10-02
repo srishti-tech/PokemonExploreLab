@@ -19,7 +19,7 @@ Then open `http://localhost:8000`.
 - Collapsible sidebar sections
 - Font Awesome icons
 - Rotating Poké Ball loading states
-- Login/register stored locally on the device
+- Firebase Authentication for real user registration/login
 - Dynamic collection progress
 - Online Pokédex with featured records on first open
 - Search by Pokémon and complete type results
@@ -35,12 +35,12 @@ Then open `http://localhost:8000`.
 - Daily Challenge
 - Regions, Trainer, Achievements and Analytics
 - Recently viewed and XP progression
-- LocalStorage persistence for app data
+- Firestore persistence for signed-in trainer data
 
 ## Data source / limitations
 
 Pokémon data is fetched from PokéAPI. Internet access is required for live data. There is no private API key.
 
-Login/register is a local demo authentication layer because the project has no backend. It should not be used for real credentials or production authentication.
+Authentication is handled by Firebase Authentication. Signed-in trainer data and application state are stored in Firestore under `users/{uid}`.
 
 Battle and calculator mechanics are intentionally simplified and labelled as estimates; they are not a replacement for the official game engine.
