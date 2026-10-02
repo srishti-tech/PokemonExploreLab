@@ -1,4 +1,27 @@
 /* Pokémon Lab — enhanced single-page application */
+/* Pokémon Lab — vanilla JS application layer */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, updateProfile } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAwKSCgw8oSxCFGELBP45CoUNI8DO3SmlA",
+  authDomain: "pokemonlabproject.firebaseapp.com",
+  projectId: "pokemonlabproject",
+  storageBucket: "pokemonlabproject.firebasestorage.app",
+  messagingSenderId: "782908120511",
+  appId: "1:782908120511:web:0d9df724cf4270d75d550a",
+  measurementId: "G-BKCS7MZSFG"
+};
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Keep the Firebase login session between page refreshes.
+setPersistence(auth, browserLocalPersistence).catch(err => console.error('Firebase persistence error:', err));
+
 const API='https://pokeapi.co/api/v2/';
 const TYPE_COLORS={bug:'#79c842',dragon:'#6f5bd3',electric:'#f4c52e',fairy:'#e78bb9',fighting:'#c83d55',fire:'#f47b43',flying:'#7fa7e8',ghost:'#7158a8',grass:'#57ad63',ground:'#d5ad55',ice:'#65c9dc',normal:'#9da4ad',poison:'#9a5db1',psychic:'#e866a5',rock:'#9b8065',water:'#4f9ee8',dark:'#5d5367',steel:'#6f7e92'};
 const TYPES=Object.keys(TYPE_COLORS);
@@ -7,11 +30,27 @@ const STARTERS=new Set(['bulbasaur','ivysaur','venusaur','charmander','charmeleo
 const LEGENDARIES=new Set(['articuno','zapdos','moltres','mewtwo','raikou','entei','suicune','lugia','ho-oh','regirock','regice','registeel','latias','latios','kyogre','groudon','rayquaza','uxie','mesprit','azelf','dialga','palkia','heatran','regigigas','giratina','cresselia','cobalion','terrakion','virizion','tornadus','thundurus','reshiram','zekrom','landorus','kyurem','xerneas','yveltal','zygarde','type-null','silvally','tapu-koko','tapu-lele','tapu-bulu','tapu-fini','cosmog','cosmoem','solgaleo','lunala','necrozma','zacian','zamazenta','eternatus','kubfu','urshifu','regieleki','regidrago','glastrier','spectrier','calyrex','enamorus','koraidon','miraidon','wo-chien','chien-pao','ting-lu','chi-yu']);
 const MYTHICALS=new Set(['mew','celebi','jirachi','deoxys','phione','manaphy','darkrai','shaymin','arceus','victini','keldeo','meloetta','genesect','diancie','hoopa','volcanion','magearna','marshadow','zeraora','meltan','melmetal','zarude','pecharunt']);
 const $=id=>document.getElementById(id); const qs=s=>document.querySelector(s); const qsa=s=>[...document.querySelectorAll(s)];
-const storeKey='pokemonLabStateV4';
 const defaultState={trainer:{name:'PokéTrainer',email:'',level:1,xp:0},collection:{},favorites:[],shiny:[],recent:[],teams:[],battleHistory:[],mysteryHistory:[],mysteryStreak:0,quiz:{score:0,streak:0,best:0},achievements:[],daily:{date:'',done:false},theme:'system',activity:[]};
-let state=loadState(); let cache=new Map(); let currentPage='home'; let compareList=[]; let teamList=[]; let battleState=null; let quizState=null;
-function loadState(){try{return {...structuredClone(defaultState),...JSON.parse(localStorage.getItem(storeKey)||'{}')}}catch{return structuredClone(defaultState)}}
-function saveState(){localStorage.setItem(storeKey,JSON.stringify(state));updateGlobalUI()}
+let state=structuredClone(defaultState); let cache=new Map(); let currentPage='home'; let compareList=[]; let teamList=[]; let battleState=null; let quizState=null;
+function loadState(){return structuredClone(defaultState)}
+let saveTimer=null;
+async function saveState(){
+    updateGlobalUI();
+    const user=auth.currentUser;
+    if(!user)return;
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(async()=>{
+        try{
+            await setDoc(doc(db,'users',user.uid),{
+                ...state,
+                updatedAt:serverTimestamp()
+            },{merge:true});
+        }catch(err){
+            console.error('Firestore save error:',err);
+            toast('Could not save your lab data to Firebase.','error');
+        }
+    },250);
+}
 function addActivity(text){state.activity.unshift({text,time:new Date().toISOString()});state.activity=state.activity.slice(0,20)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function cap(s){return String(s||'').replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
@@ -31,12 +70,114 @@ function showPage(page){currentPage=page;qsa('.page').forEach(x=>x.classList.tog
 function navigateFromEvent(e){const b=e.target.closest('[data-page]');if(b){e.preventDefault();showPage(b.dataset.page)}}
 document.addEventListener('click',navigateFromEvent);
 qsa('.nav-group-toggle').forEach(b=>b.addEventListener('click',()=>b.parentElement.classList.toggle('open')));
-$('mobileMenu').addEventListener('click',()=>{$('sidebar').classList.add('mobile-open');$('sidebarOverlay').classList.add('show')});$('sidebarOverlay').addEventListener('click',()=>{$('sidebar').classList.remove('mobile-open');$('sidebarOverlay').classList.remove('show')});$('sidebarClose').addEventListener('click',()=>{$('sidebar').classList.remove('mobile-open');$('sidebarOverlay').classList.remove('show')});$('themeBtn').addEventListener('click',cycleTheme);$('quickProfile').addEventListener('click',()=>showPage('trainer'));$('trainerChip').addEventListener('click',()=>showPage('trainer'));$('logoutBtn').addEventListener('click',()=>{localStorage.removeItem('pokemonLabSession');location.reload()});
+$('mobileMenu').addEventListener('click',()=>{$('sidebar').classList.add('mobile-open');$('sidebarOverlay').classList.add('show')});$('sidebarOverlay').addEventListener('click',()=>{$('sidebar').classList.remove('mobile-open');$('sidebarOverlay').classList.remove('show')});$('sidebarClose').addEventListener('click',()=>{$('sidebar').classList.remove('mobile-open');$('sidebarOverlay').classList.remove('show')});$('themeBtn').addEventListener('click',cycleTheme);$('quickProfile').addEventListener('click',()=>showPage('trainer'));$('trainerChip').addEventListener('click',()=>showPage('trainer'));$('logoutBtn').addEventListener('click',async()=>{try{await signOut(auth)}catch(err){console.error(err);toast('Logout failed.','error')}});
 qsa('[data-toggle-password]').forEach(b=>b.addEventListener('click',()=>{const i=qs(b.dataset.togglePassword);i.type=i.type==='password'?'text':'password';b.innerHTML=`<i class="fa-solid ${i.type==='password'?'fa-eye':'fa-eye-slash'}"></i>`}));
 qsa('.auth-tab').forEach(b=>b.addEventListener('click',()=>{qsa('.auth-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');const reg=b.dataset.auth==='register';$('loginForm').classList.toggle('hidden',reg);$('registerForm').classList.toggle('hidden',!reg)}));
-function bootAuth(){const session=localStorage.getItem('pokemonLabSession');if(session){try{state.trainer={...state.trainer,...JSON.parse(session)}}catch{};$('authView').classList.add('hidden');$('appShell').classList.remove('hidden')}else{$('authView').classList.remove('hidden');$('appShell').classList.add('hidden')}}
-$('loginForm').addEventListener('submit',e=>{e.preventDefault();const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;if(!email||!password)return;const accounts=JSON.parse(localStorage.getItem('pokemonLabAccounts')||'{}');if(!accounts[email]){toast('No local trainer found. Register first.','error');return}if(accounts[email].password!==password){toast('Incorrect password.','error');return}state.trainer={...state.trainer,...accounts[email].trainer,email};localStorage.setItem('pokemonLabSession',JSON.stringify(state.trainer));saveState();bootAuth();showPage('home')});
-$('registerForm').addEventListener('submit',e=>{e.preventDefault();const name=$('registerName').value.trim(),email=$('registerEmail').value.trim().toLowerCase(),password=$('registerPassword').value;if(password.length<6)return toast('Password must contain at least 6 characters.','error');const accounts=JSON.parse(localStorage.getItem('pokemonLabAccounts')||'{}');if(accounts[email])return toast('That trainer email is already registered on this device.','error');accounts[email]={password,trainer:{name,email,level:1,xp:0}};localStorage.setItem('pokemonLabAccounts',JSON.stringify(accounts));state.trainer={...state.trainer,name,email};localStorage.setItem('pokemonLabSession',JSON.stringify(state.trainer));saveState();bootAuth();showPage('home');toast(`Welcome, ${name}!`)});
+async function loadUserState(user){
+    const ref=doc(db,'users',user.uid);
+    const snap=await getDoc(ref);
+    const saved=snap.exists()?snap.data():{};
+    state={...structuredClone(defaultState),...saved,trainer:{...structuredClone(defaultState.trainer),...(saved.trainer||{}),email:user.email||saved?.trainer?.email||'',name:saved?.trainer?.name||user.displayName||'PokéTrainer'}};
+    delete state.updatedAt;
+    updateGlobalUI();
+    setTheme();
+    if($('mysteryStreak'))$('mysteryStreak').textContent=state.mysteryStreak||0;
+    renderMysteryHistory();
+    renderDailyMini();
+}
+
+function firebaseErrorMessage(err, action='Firebase operation'){
+    const messages={
+      'auth/invalid-credential':'Incorrect email or password.',
+      'auth/user-not-found':'No registered trainer was found with this email.',
+      'auth/wrong-password':'Incorrect email or password.',
+      'auth/invalid-email':'Please enter a valid email address.',
+      'auth/email-already-in-use':'This email is already registered. Please log in instead.',
+      'auth/weak-password':'Password must contain at least 6 characters.',
+      'auth/too-many-requests':'Too many attempts. Please wait and try again.',
+      'auth/operation-not-allowed':'Email/Password sign-in is not enabled in Firebase Authentication. Enable it in Firebase Console → Authentication → Sign-in method.',
+      'auth/network-request-failed':'Firebase could not connect. Check your internet connection and make sure you are running the site from http://localhost or Firebase Hosting, not file://.',
+      'permission-denied':'Firestore denied access. Check your Firestore Security Rules.',
+      'failed-precondition':'Firestore is not configured correctly. Check that the Firestore database exists.',
+      'unavailable':'Firestore is temporarily unavailable. Check your internet connection and try again.'
+    };
+    return messages[err?.code] || `${action} failed${err?.message ? ': '+err.message : '. Please try again.'}`;
+}
+
+
+function showAuthenticatedApp(){
+    $('authView').classList.add('hidden');
+    $('appShell').classList.remove('hidden');
+}
+function showLogin(){
+    $('authView').classList.remove('hidden');
+    $('appShell').classList.add('hidden');
+}
+
+$('loginForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
+    if(!email||!password)return;
+    const btn=e.submitter; if(btn)btn.disabled=true;
+    try{
+        const credential=await signInWithEmailAndPassword(auth,email,password);
+        await loadUserState(credential.user);
+        showAuthenticatedApp();
+        showPage('home');
+        toast(`Welcome back, ${state.trainer.name||email}!`);
+        e.target.reset();
+    }catch(err){
+        console.error('Firebase login error:',err);
+        toast(firebaseErrorMessage(err,'Login'),'error');
+    }finally{if(btn)btn.disabled=false;}
+});
+
+$('registerForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const name=$('registerName').value.trim(),email=$('registerEmail').value.trim().toLowerCase(),password=$('registerPassword').value;
+    if(!name||!email||!password)return;
+    if(password.length<6)return toast('Password must contain at least 6 characters.','error');
+    const btn=e.submitter; if(btn)btn.disabled=true;
+    try{
+        const credential=await createUserWithEmailAndPassword(auth,email,password);
+        const trainer={name,email,level:1,xp:0};
+        try{ await updateProfile(credential.user,{displayName:name}); }catch(profileErr){ console.warn('Could not set Firebase display name:',profileErr); }
+        state={...structuredClone(defaultState),trainer};
+        await setDoc(doc(db,'users',credential.user.uid),{
+            trainer,
+            collection:{},favorites:[],shiny:[],recent:[],teams:[],battleHistory:[],mysteryHistory:[],mysteryStreak:0,
+            quiz:{score:0,streak:0,best:0},achievements:[],daily:{date:'',done:false},theme:'system',activity:[],
+            createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+        });
+        updateGlobalUI();
+        showAuthenticatedApp();
+        showPage('home');
+        toast(`Welcome, ${name}! Your trainer account and profile are saved in Firebase.`);
+        e.target.reset();
+    }catch(err){
+        console.error('Firebase registration error:',err);
+        toast(firebaseErrorMessage(err,'Registration'),'error');
+    }finally{if(btn)btn.disabled=false;}
+});
+
+onAuthStateChanged(auth,async user=>{
+    try{
+        if(user){
+            await loadUserState(user);
+            showAuthenticatedApp();
+            showPage('home');
+        }else{
+            state=structuredClone(defaultState);
+            showLogin();
+        }
+    }catch(err){
+        console.error('Firebase account data error:',err);
+        state=structuredClone(defaultState);
+        showLogin();
+        toast(firebaseErrorMessage(err,'Loading your Firebase profile'),'error');
+    }
+});
+
 $('globalSearch').addEventListener('keydown',async e=>{if(e.key!=='Enter')return;const v=e.target.value.trim();if(!v)return;showPage('pokedex');$('pokemonSearch').value=v;await searchPokemon(v);e.target.value=''});
 async function searchPokemon(q){const value=(q??$('pokemonSearch').value).trim().toLowerCase();if(!value){$('pokedexResult').innerHTML=empty('fa-magnifying-glass','Search the Pokédex','Type a Pokémon name or Pokédex number above.');return}$('pokedexResult').innerHTML=loading(`Researching ${cap(value)}…`);try{const p=await getPokemon(value);recordRecent(p);addActivity(`Viewed ${cap(p.name)}`);awardXP(3);$('pokedexResult').innerHTML=detailResult(p)}catch(e){$('pokedexResult').innerHTML=errorState('Pokémon not found','Try a valid name such as Pikachu or a Pokédex number such as 25.')}}
 $('pokemonSearchBtn').addEventListener('click',()=>searchPokemon());$('pokemonSearch').addEventListener('keydown',e=>{if(e.key==='Enter')searchPokemon()});qsa('[data-search]').forEach(b=>b.addEventListener('click',()=>{showPage('pokedex');$('pokemonSearch').value=b.dataset.search;searchPokemon(b.dataset.search)}));
@@ -153,9 +294,8 @@ function renderAchievements(){$('achievementGrid').innerHTML=ACH.map(a=>{const o
 function renderAnalytics(){const c=Object.keys(state.collection).length;const byType={};Object.keys(state.collection).forEach(n=>{const p=cache.get(`pokemon/${n}`);if(p)p.types.forEach(t=>byType[t.type.name]=(byType[t.type.name]||0)+1)});const vals=TYPES.map(t=>byType[t]||0);const max=Math.max(1,...vals);$('analyticsContent').innerHTML=`<div class="analytics-grid"><div class="stat-tile panel"><strong>${c}</strong><span>Total collected</span></div><div class="stat-tile panel"><strong>${state.favorites.length}</strong><span>Favorites</span></div><div class="stat-tile panel"><strong>${state.battleHistory.length}</strong><span>Battles</span></div><div class="stat-tile panel"><strong>${state.quiz.score}</strong><span>Quiz correct</span></div></div><div class="analytics-panels"><div class="panel"><div class="section-head"><h3>Collected by type</h3></div><div class="bar-chart">${TYPES.map((t,i)=>`<div class="bar" style="height:${Math.max(4,(vals[i]/max)*100)}% ;background:${TYPE_COLORS[t]}"><span>${t.slice(0,4)}</span></div>`).join('')}</div></div><div class="panel"><div class="section-head"><h3>Progress</h3></div><div class="progress-main"><div class="progress-ring" style="background:conic-gradient(var(--blue) ${Math.min(100,c/151*100)*3.6}deg,#253e60 0deg)"><span>${Math.round(c/151*100)}%</span></div><div><strong>${c} / 151</strong><p>Kanto collection progress</p></div></div></div></div>`}
 // Collection UI event handlers and boot
 $('collectionView').addEventListener('click',()=>{$('collectionGrid').classList.toggle('list-view');toast('View toggled')});
-window.addEventListener('storage',()=>{state=loadState();updateGlobalUI()});
 setTheme();updateGlobalUI();$('mysteryStreak').textContent=state.mysteryStreak;renderMysteryHistory();renderDailyMini();
-(async()=>{bootAuth();$('appLoader').classList.add('hide');setTimeout(()=>$('appLoader').remove(),400);if(!localStorage.getItem('pokemonLabSession'))return;showPage('home');try{await api('pokemon/25')}catch{} })();
+(async()=>{$('appLoader').classList.add('hide');setTimeout(()=>$('appLoader').remove(),400);try{await api('pokemon/25')}catch{} })();
 
 /* Detail + evolution profile */
 const detailOverlay=document.getElementById('detailOverlay');
