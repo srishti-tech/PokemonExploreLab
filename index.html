@@ -160,6 +160,16 @@
             </div>
             <div class="nav-group">
               <button class="nav-group-toggle">
+                <span><i class="fa-solid fa-compass"></i> Discover</span><i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div class="nav-sub">
+                <button class="nav-link" data-page="wiki"><i class="fa-solid fa-book-open"></i><span>Pokémon Wiki</span></button>
+                <button class="nav-link" data-page="trainers"><i class="fa-solid fa-user-group"></i><span>Trainer Encyclopedia</span></button>
+                <button class="nav-link" data-page="library"><i class="fa-solid fa-book"></i><span>Pokémon Library</span></button>
+              </div>
+            </div>
+            <div class="nav-group">
+              <button class="nav-group-toggle">
                 <span><i class="fa-solid fa-box-open"></i> Collection</span
                 ><i class="fa-solid fa-chevron-down"></i>
               </button>
@@ -887,6 +897,31 @@
               </button>
             </div>
             <div id="battleArena" class="battle-arena"></div>
+
+            <!-- ADDITIVE FEATURE: online friend battles. The original Quick Battle stays unchanged. -->
+            <section class="multiplayer-panel panel" aria-labelledby="friendBattleTitle">
+              <div class="mp-heading">
+                <div class="mp-heading-icon"><i class="fa-solid fa-users"></i></div>
+                <div>
+                  <span class="eyebrow">ONLINE / CHALLENGE A FRIEND</span>
+                  <h2 id="friendBattleTitle">Friend Battle</h2>
+                  <p>Create a private room or join another trainer using a room code.</p>
+                </div>
+                <span class="mp-live-pill"><i></i> REAL-TIME</span>
+              </div>
+              <div class="mp-room-actions" id="mpRoomActions">
+                <button class="btn primary" id="createBattleRoom"><i class="fa-solid fa-plus"></i> Create Room</button>
+                <div class="mp-join-row">
+                  <label class="sr-only" for="joinBattleCode">Room code</label>
+                  <input id="joinBattleCode" type="text" maxlength="6" placeholder="ENTER ROOM CODE" autocomplete="off" spellcheck="false" aria-label="Room code" />
+                  <button class="btn ghost" id="joinBattleRoom"><i class="fa-solid fa-right-to-bracket"></i> Join Room</button>
+                </div>
+              </div>
+              <div id="mpStatus" class="mp-status" role="status" aria-live="polite">Sign in with your trainer account, then create a room or enter a friend's code.</div>
+              <div id="mpRoomView" class="mp-room-view">
+                <div class="mp-empty"><i class="fa-solid fa-gamepad"></i><strong>Your next battle starts here</strong><span>Two trainers · One room code · One winner</span></div>
+              </div>
+            </section>
           </section>
           <section class="page" id="page-battleHistory">
             <div class="page-head">
@@ -1016,6 +1051,30 @@
             </div>
             <div id="achievementGrid" class="achievement-grid"></div>
           </section>
+
+          <!-- ADDITIVE DISCOVERY PAGES: existing pages and IDs remain unchanged -->
+          <section class="page" id="page-wiki">
+            <div class="page-head"><div><span class="eyebrow">DISCOVER / KNOWLEDGE BASE</span><h1>Pokémon Wiki</h1><p>Explore species records, types, abilities, stats and evolution research.</p></div></div>
+            <div class="plx-toolbar panel">
+              <label class="plx-search"><i class="fa-solid fa-magnifying-glass"></i><input id="wikiSearch" type="search" placeholder="Search Pokémon by name or Pokédex number..." autocomplete="off"></label>
+              <select id="wikiType" aria-label="Filter by type"><option value="all">All types</option></select>
+              <select id="wikiGeneration" aria-label="Filter by generation"><option value="all">All generations</option><option value="1">Generation I · Kanto</option><option value="2">Generation II · Johto</option><option value="3">Generation III · Hoenn</option><option value="4">Generation IV · Sinnoh</option><option value="5">Generation V · Unova</option><option value="6">Generation VI · Kalos</option><option value="7">Generation VII · Alola</option><option value="8">Generation VIII · Galar</option><option value="9">Generation IX · Paldea</option></select>
+              <button class="btn primary" id="wikiSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            </div>
+            <div class="plx-wiki-meta"><span id="wikiResultCount">Featured research records</span><span>Data: PokéAPI</span></div>
+            <div id="wikiGrid" class="plx-card-grid"></div><div class="plx-load-more"><button class="btn ghost" id="wikiLoadMore">Load more Pokémon</button></div>
+          </section>
+          <section class="page" id="page-trainers">
+            <div class="page-head"><div><span class="eyebrow">DISCOVER / PEOPLE OF THE POKÉMON WORLD</span><h1>Trainer Encyclopedia</h1><p>Explore well-known trainers and their signature Pokémon teams. Teams may vary by season, game and continuity.</p></div></div>
+            <div class="plx-toolbar panel"><label class="plx-search"><i class="fa-solid fa-magnifying-glass"></i><input id="trainerSearch" type="search" placeholder="Search trainers, regions or specialties..." autocomplete="off"></label><select id="trainerRegion" aria-label="Filter trainers by region"><option value="all">All regions</option><option>Kanto</option><option>Johto</option><option>Hoenn</option><option>Sinnoh</option><option>Unova</option><option>Kalos</option><option>Galar</option><option>Paldea</option></select></div>
+            <div id="trainerDirectory" class="plx-trainer-grid"></div><div id="trainerTeamDetail" class="plx-trainer-detail" hidden></div>
+          </section>
+          <section class="page" id="page-library">
+            <div class="page-head"><div><span class="eyebrow">DISCOVER / READING ROOM</span><h1>Pokémon Library</h1><p>A curated shelf of guides, encyclopedias, manga and world-building books. Find official editions through legitimate retailers.</p></div></div>
+            <div class="plx-toolbar panel"><label class="plx-search"><i class="fa-solid fa-magnifying-glass"></i><input id="bookSearch" type="search" placeholder="Search the library..." autocomplete="off"></label><select id="bookCategory" aria-label="Filter books"><option value="all">All categories</option><option value="guide">Guides & encyclopedias</option><option value="ecology">Ecology & world</option><option value="manga">Manga & comics</option><option value="activity">Activity books</option></select></div>
+            <div class="plx-library-note"><i class="fa-solid fa-book-open"></i><div><strong>Your Pokémon reading shelf</strong><p>Book details are for discovery. Covers and availability can vary by region; use the links to check current editions.</p></div></div><div id="bookGrid" class="plx-book-grid"></div>
+          </section>
+
           <section class="page" id="page-analytics">
             <div class="page-head">
               <div>
