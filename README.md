@@ -44,3 +44,22 @@ Pokémon data is fetched from PokéAPI. Internet access is required for live dat
 Authentication is handled by Firebase Authentication. Signed-in trainer data and application state are stored in Firestore under `users/{uid}`.
 
 Battle and calculator mechanics are intentionally simplified and labelled as estimates; they are not a replacement for the official game engine.
+
+
+## Added in this enhancement (original pages preserved)
+
+- **Pokémon Wiki**: search by name or Pokédex number, filter by type/generation, browse paginated records, and open the existing detailed Pokémon research modal.
+- **Trainer Encyclopedia**: curated profiles for popular trainers with region/specialty filters and clickable team Pokémon. Trainer teams are representative and may vary by continuity.
+- **Pokémon Library**: searchable book discovery shelf with categories and links to find official editions. It does not distribute copyrighted book files.
+- New styling is scoped under `plx-` class names to avoid changing the appearance of existing pages.
+- These additions use the existing PokéAPI data layer and reuse the existing Pokémon detail modal. Trainer portraits use remote images with initials fallback.
+
+
+## Friend Battle (new)
+
+- Private six-character room codes let two signed-in trainer accounts battle from separate browsers/devices.
+- Firestore snapshot listeners keep room status, Pokémon selection, HP, turn ownership, and battle logs synchronized in real time.
+- Each trainer chooses a Pokémon; the host gets the first turn, and players can attack or defend. The winner is recorded in the existing battle history and receives XP.
+- The original Quick Battle and other existing pages remain in place.
+- **Required setup:** merge the `battleRooms` rules from `FIRESTORE_SETUP.md` into the existing Firestore rules. The feature cannot work online until Firestore permits authenticated room reads/writes.
+- The battle is a simplified casual client-driven model, not a cheat-proof competitive battle engine.
